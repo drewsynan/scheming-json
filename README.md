@@ -109,3 +109,14 @@ Coming soon: how to write functions that can accept `$...$` arguments.
 
 
 #Composing predicate functions
+The `compose1PredsWith` function takes an array of 1-argument predicates and pipes them together using `glue`.
+By default, predicates are glued together with `&&`.
+
+As an example, let's make a predicate that only allows non-empty arrays
+```javascript
+var isNonEmptyArray = compose1Preds([function(v){return !isEmpty(v)}, isArray]);
+```
+or a one that allows either an empty array or an array of tags
+```javascript
+var maybeTags = compose1PredsWith([parser([tag]), isEmptyArray], or);
+```
