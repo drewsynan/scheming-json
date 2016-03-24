@@ -114,7 +114,7 @@ By default, predicates are glued together with `&&`.
 
 As an example, let's make a predicate that only allows non-empty arrays
 ```javascript
-var isNonEmptyArray = compose1Preds([function(v){return !isEmpty(v)}, isArray]);
+var isNonEmptyArray = compose1PredsWith([function(v){return !isEmpty(v)}, isArray], and);
 ```
 or a one that allows either an empty array or an array of tags
 ```javascript
