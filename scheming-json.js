@@ -37,6 +37,7 @@ var isObject 	= function(val) { return (_.isObject(val) && !_.isArray(val)); };
 var isFunction	= _.isFunction;
 var isNumber	= _.isNumber;
 var isUndefined	= _.isUndefined;
+var isEmpty 	= _.isEmpty;
 var isNonempty	= function(val) { return !_.isEmpty(val) }
 var isAnything  = function() { return true; }
 
@@ -103,24 +104,39 @@ function isSubset(a, b) {
 	return (_.intersectionWith(s(a),s(b),_.isEqual).length === s(a).length);
 }
 
-function compose1Preds(funcs) {
+function and(a, b) { return (a && b); }
+function or(a, b) { return (a || b); }
+
+function compose1PredsWith(funcs, glue) {
+	glue = glue || and;
+	
 	function convertToPred(x) {
-		var p = function(){return true;};
+		var p; // = function(){return true;};
 
 		if (_.isObject(x))		p = isObject;
 		if (_.isArray(x))		p = isArray;
 		if (_.isUndefined(x))	p = isUndefined;
 		if (_.isFunction(x))	p = x;
-		
+	
 		return p;
 	}
 
 	if (funcs.length < 2) return convertToPred(funcs[0]);
 
+	//console.log(funcs);
+
 	return funcs.reduce(function(acc, current) {
+		//console.log(acc, current);
 		var c = convertToPred(current);
-		return function(x) { return c(x) && acc(x)}; 
-	}, function(){return true;});
+		//console.log(acc);
+		return function(x) { 
+			return glue(acc(x), c(x)); 
+		}; 
+	});
+}
+
+function compose1Preds(funcs) {
+	return compose1PredsWith(funcs, and);
 }
 
 function parseSiblingVar(v, f) {
@@ -148,20 +164,22 @@ function parseSchemaArray(a) {
 	});
 	
 	function processArray(a) {
-		var p = compose1Preds(preds);
+		var p = compose1PredsWith(preds, and);
 		return a.reduce(function(acc, current){
 			return acc && p(current);
 		}, true);
 	}
 
-	return compose1Preds([processArray, isArray]);
+	return compose1PredsWith([processArray, isArray], and);
 }
 
 function parseSchemaObject(o) {
 	var keys = _.keys(o).sort();
 
 	var STAR_STAR;
+	var STAR_STAR_PRED;
 	var STAR;
+	var STAR_PREDS;
 
 	//see if we have any '**' wildcard keys
 	var star_star_preds = keys.filter(function(k){ return k === '**'; }).map(function(k){ return o[k]; });
@@ -170,6 +188,7 @@ function parseSchemaObject(o) {
 		if(star_star_preds.length > 1) throw new Error("only one ** key is allowed");
 
 		STAR_STAR = true;
+
 		STAR_STAR_PRED = getPred(o['**']);
 		keys = keys.filter(function(k) {return k !== '**'; }).sort();
 	}
@@ -296,7 +315,7 @@ function parseSchemaObject(o) {
 	preds.push(isNonempty);
 	preds.push(isObject);
 
-	return compose1Preds(preds);
+	return compose1PredsWith(preds, and);
 }
 
 function parseSchema(schema) {
