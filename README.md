@@ -36,7 +36,15 @@ var schema = {articles:
   }]
 };
 ```
-Where the functions `isString`, and `isDateString` are boolean-returning functions that we've defined.
+And get a parser function using
+```javascript
+var articlesParser = parser(schema);
+
+var articlesValid = articlesParser(someArrayofArticles); // => true
+// hooray!
+```
+
+Where the functions `isString`, and `isDateString` are user-defined (or library-defined) boolean-returning functions ("predicates").
 
 Alternatively, we could build up smaller schema pieces, and then combine them:
 ```javascript
@@ -45,10 +53,6 @@ var article = {title: isString, author: isString, published: isDateString, tags[
 var articles = {articles: [article]};
 ```
 
-To get a parser function that will validate a JavaScript object use the `parser` function
-```javascript
-var singleArticleParser = parser(article);
-```
 
 ##Special values
 ###**
