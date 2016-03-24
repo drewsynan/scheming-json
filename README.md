@@ -116,7 +116,7 @@ As an example, let's make a predicate that only allows non-empty arrays
 ```javascript
 var isNonEmptyArray = compose1PredsWith([function(v){return !isEmpty(v)}, isArray], and);
 ```
-or a one that allows either an empty array or an array of tags
+or a parser that allows either an empty array or an array of tags
 ```javascript
-var maybeTags = compose1PredsWith([parser([tag]), isEmptyArray], or);
+var tagsOrEmpty = compose1PredsWith([parser([tag]), isEmptyArray], or);
 ```
