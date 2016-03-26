@@ -146,9 +146,9 @@ function parseSiblingKey(keyName) {
 }
 
 function arrayParser(a) {
-	var preds = a.map(function(v){ parser(v) });
-	
-	function processArray(a) {
+	var preds = a.map(function(v){ return parser(v); });
+
+	function processArray(a) { //ugh, this always returns true for an empty list. what is a sane default?
 		var p = composePredicatesWith(preds, and);
 		return a.reduce(function(acc, current){
 			return acc && p(current);
@@ -307,8 +307,20 @@ function objectParser(o) {
 function parser(v) {
 	var p = valueParser; // default value parser fallback
 
-	if (isArray(v)) 	p = arrayParser; // override valueParser
-	if (isObject(v))	p = objectParser; // override valueParser, note that this def of isObject excludes arrays and functions
+	if (isArray(v)) {
+		if(isEmpty(v)) {
+			p = function(x){ return isArray; };
+		} else {
+			p = arrayParser; // override valueParser
+		}
+	}
+	if (isObject(v)) {
+		if(isEmpty(v)) {
+			p = function(x) { return isObject; };
+		} else {
+			p = objectParser; // override valueParser, note that this def of isObject excludes arrays and functions
+		}
+	}
 	if (isString(v)) {
 		var specials = parseSpecial(v);
 		if(specials.length > 0) {
