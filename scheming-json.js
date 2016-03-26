@@ -30,10 +30,36 @@ Special access to keys in the same object $name$ is the same as get the value of
 	{tags: [{price: number, yen:toYen(function(d) { return d.price }) }]}
 */
 
+var SPECIALS = [
+	{name: 'STAR',		rule: /(?:^\*$)|(?:^\*[^*]+\*$)/},
+	{name: 'STAR_STAR',	rule: /^\*{2}$/},
+	{name: 'SIBLING',	rule: /^\$(.+)\$$/}
+];
+
+function parseSpecial(s) {
+
+	function parseSymbol(s, regex, selector) {
+		selector = selector || _.last;
+
+		var matches = s.match(regex);
+		if (!_.isNull(matches)) {
+			return selector(matches);
+		}
+	}
+
+	return SPECIALS.map(function(v) {
+		return {name: v.name, result: parseSymbol(s, v.rule), input: s};
+	}).filter(function(v){
+		return !_.isUndefined(v.result);
+	});
+}
+
+
+
 var isArray		=  _.isArray;
 var isString 	=  _.isString;
 var isBoolean 	=  _.isBoolean;
-var isObject 	= function(val) { return (_.isObject(val) && !_.isArray(val)); };
+var isObject 	= function(val) { return (_.isObject(val) && !_.isArray(val) && !_.isFunction(val)); };
 var isFunction	= _.isFunction;
 var isNumber	= _.isNumber;
 var isUndefined	= _.isUndefined;
@@ -41,109 +67,81 @@ var isEmpty 	= _.isEmpty;
 var isNonempty	= function(val) { return !_.isEmpty(val) }
 var isAnything  = function() { return true; }
 
-var specials = {
-	'*': isAnything
-};
-
-function isPrimative(val) {
-	switch (typeof val) {
-		case 'object':
-			return false;
-			break;
-		default:
-			return true;
-	}
-}
+function and(a, b) { return (a && b); }
+function or(a, b) { return (a || b); }
 
 function isStopValue(val) {
+	function isPrimative(val) {
+		switch (typeof val) {
+			case 'object':
+				return false;
+				break;
+			default:
+				return true;
+		}
+	}
+
 	return isPrimative(val) || (_.isObject(val) && _.isEmpty(val)); // all non-objects, or empty objects and empty arrays
-}
-
-function stopValuePredicate(val) {
-	if (isArray(val)) return isArray;
-	if (isObject(val)) return isObject;
-	if (specials[val]) return specials[val];
-
-	return function(x) {
-		return _.isEqual(val,x);
-	}
-}
-
-function thunk(f) {
-	var EVALUATED = false;
-
-	var theThunk = function(args, thisArg) {
-		thisArg = thisArg || undefined;
-		if (!_.isArray(args)) args = [args];
-
-		var returnValue = f.apply(thisArg, args);
-		EVALUATED = true;
-		return returnValue;
-
-	}
-	theThunk.__IS_THUNK__ = true;
-
-	return theThunk;
-}
-
-function Failure(fakeFunctionNames) {
-	var fail = {};
-	if (fakeFunctionNames) {
-		fakeFunctionNames.forEach(function(v){
-			fail[v] = function() { return new Failure (fakeFunctionNames)}
-		});
-	}
-
-	_.merge(this, fail);
-
-	return this;
 }
 
 function isSubset(a, b) {
 	function s(x) { return _.uniqWith(x, _.isEqual) }
 	return (_.intersectionWith(s(a),s(b),_.isEqual).length === s(a).length);
 }
+/***** end predicates ******/
 
-function and(a, b) { return (a && b); }
-function or(a, b) { return (a || b); }
+/***** utility funcs ******/
 
-function compose1PredsWith(funcs, glue) {
+function getPredicateForValue(v) {
+	var p = function(x){ return _.isEqual(x,v); };
+
+	if (_.isObject(v))		p = isObject;
+	if (_.isArray(v))		p = isArray;
+	if (_.isUndefined(v))	p = isUndefined;
+	if (_.isFunction(v))	p = v;
+
+	return p;
+}
+
+function composePredicatesWith(funcs, glue) {
 	glue = glue || and;
-	
-	function convertToPred(x) {
-		var p; // = function(){return true;};
 
-		if (_.isObject(x))		p = isObject;
-		if (_.isArray(x))		p = isArray;
-		if (_.isUndefined(x))	p = isUndefined;
-		if (_.isFunction(x))	p = x;
-	
-		return p;
+	if (funcs.length < 2) {
+		return getPredicateForValue(funcs[0]); // need at least two arguments for and, or, glue etc
 	}
 
-	if (funcs.length < 2) return convertToPred(funcs[0]);
-
-	//console.log(funcs);
-
 	return funcs.reduce(function(acc, current) {
-		//console.log(acc, current);
-		var c = convertToPred(current);
-		//console.log(acc);
+		var c = getPredicateForValue(current);
 		return function(x) { 
 			return glue(acc(x), c(x)); 
 		}; 
 	});
 }
 
-function compose1Preds(funcs) {
-	return compose1PredsWith(funcs, and);
+function thunk(f) {
+	var theThunk = function(args, thisArg) {
+		return f.apply(thisArg, [].concat(args));
+	}
+	theThunk.__IS_THUNK__ = true;
+	return theThunk;
+}
+
+function Failure(fakeFunctionNames) {
+	fakeFunctionNames = fakeFunctionNames || [];
+	var fail = {};
+
+	fakeFunctionNames.forEach(function(v){
+		fail[v] = function() { return new Failure (fakeFunctionNames) }
+	});
+	_.merge(this, fail);
+
+	return this;
 }
 
 function parseSiblingVar(v, f) {
-	var isSpecial = v.match(/^\$(.+)\$$/);
-	if(!_.isNull(isSpecial)) {
-		var keyName = (isSpecial[isSpecial.length-1]);
-		return thunk(f(keyName));
+	var token = parseSpecial(v).filter(function(t){ return t.name === 'SIBLING'; })[0];
+	if(token) {
+		return thunk(f(token.value));
 	}
 }
 
@@ -156,157 +154,152 @@ function parseSiblingKey(keyName) {
 	}
 }
 
-function parseSchemaArray(a) {
-	var preds = a.map(function(v){
-		if (isArray(v)) return parseSchemaArray(v);
-		if (isFunction(v)) return v;
-		if (isObject(v)) return parseSchemaObject(v);
-	});
+function arrayParser(a) {
+	var preds = a.map(function(v){ parser(v) });
 	
 	function processArray(a) {
-		var p = compose1PredsWith(preds, and);
+		var p = composePredicatesWith(preds, and);
 		return a.reduce(function(acc, current){
 			return acc && p(current);
 		}, true);
 	}
 
-	return compose1PredsWith([processArray, isArray], and);
+	return composePredicatesWith([processArray, isArray], and);
 }
 
-function parseSchemaObject(o) {
-	var keys = _.keys(o).sort();
-
-	var STAR_STAR;
-	var STAR_STAR_PRED;
-	var STAR;
-	var STAR_PREDS;
-
-	//see if we have any '**' wildcard keys
-	var star_star_preds = keys.filter(function(k){ return k === '**'; }).map(function(k){ return o[k]; });
-
-	if(star_star_preds.length > 0) {
-		if(star_star_preds.length > 1) throw new Error("only one ** key is allowed");
-
-		STAR_STAR = true;
-
-		STAR_STAR_PRED = getPred(o['**']);
-		keys = keys.filter(function(k) {return k !== '**'; }).sort();
-	}
-
-	//see if we have any '*' single keys
-	//multiple * keys must be anded together ....
-	// {*:isString, *:isBoolean, *:isString, *:'*'} -> we don't care what the keys are, but we have to have
-	// two fields that are strings, and one that's a boolean, and one field that can be anything
-
-	function filter_star(k) { return (k === '*' || k.match(/^\*[^*]+\*$/)!== null); }
-	var star_preds = keys.filter(filter_star).map(function(k){ return getPred(o[k]); });
-
-	if (star_preds.length > 0) {
-		STAR = true;
-		STAR_PREDS = star_preds;
-		keys = keys.filter(function(k) { return !filter_star(k)}).sort();
-		
-	}
-
+function objectParser(o) {
+	var SPECIALS_USED;
+	var SPECIALS_ENV;
 	
+	function SPECIALS_PRESENT() { return _.keys(SPECIALS_ENV.preds).length > 0; }
 
-	//predicate to make sure keys are equal
-	function equalKeys(x) {
-		return _.isEqual(_.keys(x).sort(), keys);
-	}
+	function genericStar(config/*={obj, keys, anySpecials, tokenName}*/, tokenName){
 
-	//predicate to see if our filtered keys are a subset of the object keys
-	function subSetKeys(x) {
-		return isSubset(keys, _.keys(x));
-	}
+		var obj = config.obj;
+		var keys = config.keys;
+		var anySpecials = config.anySpecials;
 
-	function getPred(v) {
-		if (isFunction(v))	return v;
-		if (isArray(v)) 	return parseSchemaArray(v);
-		if (isObject(v))	return parseSchemaObject(v);
-		if (isString(v)) {
-			var isSibling = parseSiblingVar(v, parseSiblingKey);
-			if (isSibling) return isSibling;
+		var preds = anySpecials.filter(function(v){ return v.name === tokenName }).map(function(v){ return obj[v.input] });
+		
+		var remainingKeys = keys.filter(function(v) { 
+			var notInSpecials = anySpecials.reduce(function(acc, current){
+				return acc && (v !== current.input);
+			}, true);
+			return notInSpecials;
+		});
+
+		if (preds.length > 0) {
+			if(!config.preds[tokenName]) {
+				config.preds[tokenName] = preds;
+			} else {
+				config.preds[tokenName] = config.preds[tokenName].concat(preds);
+			}
 		}
 
-		return stopValuePredicate(v);
+		return {obj: obj, keys: remainingKeys, anySpecials: anySpecials, preds: config.preds};
 	}
 
-	var preds = [];
+	function test_special(f, SPECIAL_NAME){
+		return function(obj) {
+			var preds = SPECIALS_ENV.preds[SPECIAL_NAME];
+			var remaining_keys = SPECIALS_ENV.keys;
+			var affected_keys = _.difference(_.keys(obj), remaining_keys); // keys in the object not in our filtered keys
 
-	//parse each key out
-	var validator = {};
-	keys.forEach(function(k){
-		var current = o[k];
-		validator[k] = getPred(current);
-	});
+			return f(obj, remaining_keys, affected_keys, preds);
+		}
+	};
 
-	
-
-	function testObjectKeys(obj) {
-		function testStarPreds(obj) {
-			var star_keys = _.difference(_.keys(obj), keys); // keys in the object not in our filtered keys
-			
+	function test_star(obj, remaining_keys, affected_keys, preds) {
+			function incrementIfExists(o, k, inc) {
+				if(o[k]) {
+					o[k] = o[k] + inc;
+				} else {
+					o[k] = inc;
+				}
+			}
 			// we need to count each distinct predicate function ... there is no way to distinguish
 			// between two functions that *do* the same thing, so beware.......
-
-			var star_preds_counts = {};
-			STAR_PREDS.forEach(function(p){
-				if(star_preds_counts[p]) {
-					star_preds_counts[p]++;
-				} else {
-					star_preds_counts[p] = 1;
-				}
-			});
+			var pred_counts = preds.reduce( function(acc, p){ incrementIfExists(acc, p, 1); }, {});
 
 			// now, take all the keys leftover from the object that aren't in 'keys'
 			// apply all the star preds
-			var star_preds_successes = {};
-			STAR_PREDS.forEach(function(p){
-				var successes = star_keys.reduce(function(acc,current){
-					if(p(obj[current])) {
+			var pred_successes = preds.reduce(function(acc_outer, p){
+				var successes = affected_keys.reduce(function(acc,current){
+					if(parser(p)(obj[current])) {
 						return acc +1;
 					} else {
 						return acc;
 					}
 				}, 0);
-
-				if (star_preds_successes[p]) {
-					star_preds_successes[p] = star_preds_successes[p] + successes;
-				} else {
-					star_preds_successes[p] = successes;
-				}
-			});
+				incrementIfExists(acc_outer, p, successes);
+				return acc_outer;
+			}, {});
 
 			// and count how many trues there are, and make sure the numbers match up!
-			return _.isEqual(star_preds_counts, star_preds_successes);
-		}
+			return _.isEqual(pred_counts, pred_successes);
+		};
 
-		function testOtherPreds(obj) {
-			return _.keys(obj).reduce(function(acc, current){
-				var validatorFunc = validator[current];
+	function test_star_star(obj, remaining_keys, affected_keys, preds) {
+		return affected_keys.reduce(function(a,k){
+			var predsMatchForK = preds.reduce(function(acc,p){
+				return (acc || parser(p)(obj[k]))
+			}, false);
+			
+			return (a && predsMatchForK);
+		}, true);
+	};	
 
-				if (!validatorFunc){ // oh noooo the function is undefined
-					if(STAR_STAR) { // should we accept any key name, that satisfies the ** predicate?
-						return acc && STAR_STAR_PRED(obj[current]);
-					}
+	function test_regular_keys(obj) {
+		var expected_keys = SPECIALS_ENV.keys;
+		var unexpected_keys = _.difference(_.keys(obj), expected_keys);
 
-					return acc; // we shouldn't get here... somehow it's all fucked up, so just ignore the janky predicate
+		var expected_valid = expected_keys.reduce(function(acc,k){
+			var currentPred = parser(o[k]); // the top level object, refactor out
+			if(currentPred.__IS_THUNK__) {
+					return acc && currentPred([obj, obj[k]]);
 				}
+			return acc && currentPred(obj[k]);
+		}, true);
 
-				if(validatorFunc.__IS_THUNK__) {
-					return acc && validatorFunc([obj, obj[current]]);
-				}
-				return acc && validatorFunc(obj[current]);
-			}, true);
-		}
+		var unexpected_ok = SPECIALS_PRESENT();
 
-		return (STAR ? (testOtherPreds(obj) && testStarPreds(obj)) : testOtherPreds(obj));
+		return (unexpected_keys.length > 0)? (expected_valid && unexpected_ok) : expected_valid;
 	}
 
+	function testObjectKeys(obj) {
+		// compose test_regular and all specials
+		var regular = test_regular_keys(obj);
+		var specials = SPECIALS_USED.reduce(function(acc, current){
+			if(SPECIALS_ENV.preds[current]) {
+				return acc && SPECIALS_ENV.test[current](obj);
+			} else {
+				return acc;
+			}
+		}, true);
+
+		return (SPECIALS_PRESENT()) ? (regular && specials) : regular;
+	}
+
+
+	function equalKeys(x) { return _.isEqual(_.keys(x).sort(), SPECIALS_ENV.keys.sort()); }
+	function subSetKeys(x) { return isSubset(SPECIALS_ENV.keys, _.keys(x)); }
+
+
+	var anySpecials = _.flatten(_.keys(o).map(function(v){ return parseSpecial(v) }));
+
+	var SPECIALS_USED = ['STAR_STAR', 'STAR'];
+	var SPECIALS_ENV = SPECIALS_USED.reduce(function(acc,current){
+			return genericStar(acc, current);
+		}, {obj: o, keys: _.keys(o), anySpecials: anySpecials, preds: {}});
+
+	SPECIALS_ENV.test = {};
+	SPECIALS_ENV.test['STAR'] = test_special(test_star, 'STAR');
+	SPECIALS_ENV.test['STAR_STAR'] = test_special(test_star_star, 'STAR_STAR');
+
+	var preds = [];
 	preds.push(testObjectKeys);
 
-	if (STAR_STAR || STAR) {
+	if (SPECIALS_PRESENT()) {
 		preds.push(subSetKeys);
 	} else {
 		preds.push(equalKeys);
@@ -315,14 +308,30 @@ function parseSchemaObject(o) {
 	preds.push(isNonempty);
 	preds.push(isObject);
 
-	return compose1PredsWith(preds, and);
+	return composePredicatesWith(preds, and);
 }
 
-function parseSchema(schema) {
-	if (isArray(schema)) return parseSchemaArray(schema);
-	if (isObject(schema)) return parseSchemaObject(schema);
-	throw new Error('Invalid Schema');
-}
+function parser(v) {
+	var = getPredicateForValue; // default value parser fallback
 
-var parser = parseSchema;
+	if (isArray(v)) 	p = arrayParser; // override getPredicateForValue
+	if (isObject(v))	p = objectParser; // override getPredicateForValue, note that this def of isObject excludes arrays and functions
+	if (isString(v)) {
+		var specials = parseSpecial(v);
+		if(specials.length > 0) {
+			switch (specials[0].name) {
+				case 'STAR':
+					p = isAnything;
+					break;
+				case 'SIBLING':
+					p = parseSiblingVar(v, parseSiblingKey);
+					break;
+				default:
+					p = parseSpecial;
+			}
+		};
+	};
+
+	return p(v);
+}
 
