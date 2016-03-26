@@ -67,8 +67,11 @@ var isEmpty 	= _.isEmpty;
 var isNonempty	= function(val) { return !_.isEmpty(val) }
 var isAnything  = function() { return true; }
 
-function and(a, b) { return (a && b); }
-function or(a, b) { return (a || b); }
+
+function id(x) { return x; }
+function not(x) { return (!x); };
+function and(a,b) { return (a && b); };
+function or(a,b) { return (a || b); };
 
 function isStopValue(val) {
 	function isPrimative(val) { return (typeof val !== 'object') } // since typeof Function is 'function'
@@ -107,6 +110,102 @@ function composePredicatesWith(funcs, glue) {
 			return glue(acc(x), c(x)); 
 		}; 
 	});
+}
+
+function o(initial) {
+	var funcs = [];
+	var INITIALIZED = false;
+
+	o_o.__IS_COMPOSER__ = true;
+
+	o_o.and = function(f) {
+		funcs.push(statefulAnd(force(f)));
+		return this;
+	}
+
+	o_o.nand = function(f) {
+		funcs.push(statefulNand(force(f)));
+		return this;
+	}
+
+	o_o.or = function(f) {
+		funcs.push(statefulOr(force(f)));
+		return this;
+	}
+
+	o_o.nor = function(f) {
+		funcs.push(statefulNor(force(f)));
+		return this;
+	}
+
+	o_o.not = function() {
+		funcs.push(statefulNot);
+		return this;
+	}
+
+	function force(f) {
+		if(f.__IS_COMPOSER__) { return f() }
+
+		return f;
+	}
+
+	function applyState(g) {
+		return function(f) {
+			return function(state, x) {
+				return (g(state, f(x)));
+			}
+		}
+	}
+
+	function and(a,b) { return a && b; }
+	var statefulAnd = applyState(and);
+
+	function or(a,b) { return a || b; }
+	var statefulOr = applyState(or);
+
+	function not(x) { return !x; }
+
+	function statefulNot(state, x) {
+		return !state;
+	}
+
+	function nand(a,b) { return not(and(a,b)); };
+	var statefulNand = applyState(nand);
+
+	function nor(a,b) { return not(or(a,b)); };
+	var statefulNor = applyState(nor);
+
+	function threadState(funcs) {
+		return function(v) {
+			return funcs.reduce(function(acc,currentFunc){
+				return currentFunc(acc, v);
+			}, initial(v));
+		}
+	};
+
+	//what happens when we execute/force the thunk?
+	//need to reduce the funcs list (compose)
+	//and then execute
+	function o_o(){
+		if (arguments.length === 0) {
+			if(INITIALIZED) {
+				return threadState(funcs);
+			} else {
+				throw new Error("Not initialized!");
+			}
+		}
+
+		if (arguments.length >= 1) {
+			if (!INITIALIZED) {
+				INITIALIZED = true; 
+				return this;
+			} else {
+				return threadState(funcs).apply(this, arguments);
+			}
+		}
+	}
+	if(initial) {INITIALIZED = true};
+	return o_o;
 }
 
 function thunk(f) {
