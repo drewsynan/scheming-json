@@ -207,10 +207,11 @@ function objectParser(o) {
 				} else {
 					o[k] = inc;
 				}
+				return o;
 			}
 			// we need to count each distinct predicate function ... there is no way to distinguish
 			// between two functions that *do* the same thing, so beware.......
-			var pred_counts = preds.reduce( function(acc, p){ incrementIfExists(acc, p, 1); }, {});
+			var pred_counts = preds.reduce( function(acc, p){ return incrementIfExists(acc, p, 1); }, {});
 
 			// now, take all the keys leftover from the object that aren't in 'keys'
 			// apply all the star preds
@@ -227,6 +228,7 @@ function objectParser(o) {
 			}, {});
 
 			// and count how many trues there are, and make sure the numbers match up!
+			//console.log(pred_counts, pred_successes);
 			return _.isEqual(pred_counts, pred_successes);
 		};
 
