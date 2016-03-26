@@ -312,7 +312,7 @@ function objectParser(o) {
 }
 
 function parser(v) {
-	var = getPredicateForValue; // default value parser fallback
+	var p = getPredicateForValue; // default value parser fallback
 
 	if (isArray(v)) 	p = arrayParser; // override getPredicateForValue
 	if (isObject(v))	p = objectParser; // override getPredicateForValue, note that this def of isObject excludes arrays and functions
