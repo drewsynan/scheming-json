@@ -321,10 +321,10 @@ function parser(v) {
 		if(specials.length > 0) {
 			switch (specials[0].name) {
 				case 'STAR':
-					p = isAnything;
+					p = function(x){ return isAnything; };
 					break;
 				case 'SIBLING':
-					p = parseSiblingVar(v, parseSiblingKey);
+					p = function(x){return parseSiblingVar(x, parseSiblingKey)};
 					break;
 				default:
 					p = parseSpecial;
