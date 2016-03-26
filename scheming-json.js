@@ -71,17 +71,8 @@ function and(a, b) { return (a && b); }
 function or(a, b) { return (a || b); }
 
 function isStopValue(val) {
-	function isPrimative(val) {
-		switch (typeof val) {
-			case 'object':
-				return false;
-				break;
-			default:
-				return true;
-		}
-	}
-
-	return isPrimative(val) || (_.isObject(val) && _.isEmpty(val)); // all non-objects, or empty objects and empty arrays
+	function isPrimative(val) { return (typeof val !== 'object') } // since typeof Function is 'function'
+	return isPrimative(val) || (_.isObject(val) && _.isEmpty(val)); // all non-objects + functions, etc, or empty objects and empty arrays
 }
 
 function isSubset(a, b) {
@@ -92,7 +83,7 @@ function isSubset(a, b) {
 
 /***** utility funcs ******/
 
-function getPredicateForValue(v) {
+function valueParser(v) {
 	var p = function(x){ return _.isEqual(x,v); };
 
 	if (_.isObject(v))		p = isObject;
@@ -107,11 +98,11 @@ function composePredicatesWith(funcs, glue) {
 	glue = glue || and;
 
 	if (funcs.length < 2) {
-		return getPredicateForValue(funcs[0]); // need at least two arguments for and, or, glue etc
+		return valueParser(funcs[0]); // need at least two arguments for and, or, glue etc
 	}
 
 	return funcs.reduce(function(acc, current) {
-		var c = getPredicateForValue(current);
+		var c = valueParser(current);
 		return function(x) { 
 			return glue(acc(x), c(x)); 
 		}; 
@@ -312,10 +303,10 @@ function objectParser(o) {
 }
 
 function parser(v) {
-	var p = getPredicateForValue; // default value parser fallback
+	var p = valueParser; // default value parser fallback
 
-	if (isArray(v)) 	p = arrayParser; // override getPredicateForValue
-	if (isObject(v))	p = objectParser; // override getPredicateForValue, note that this def of isObject excludes arrays and functions
+	if (isArray(v)) 	p = arrayParser; // override valueParser
+	if (isObject(v))	p = objectParser; // override valueParser, note that this def of isObject excludes arrays and functions
 	if (isString(v)) {
 		var specials = parseSpecial(v);
 		if(specials.length > 0) {
