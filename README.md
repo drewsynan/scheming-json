@@ -54,4 +54,4 @@ var articles = {articles: [article]};
 ```
 
 
-## See the docs for more information!
+### See the docs for more!
