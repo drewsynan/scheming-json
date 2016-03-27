@@ -1,50 +1,189 @@
 'use strict';
-/*
-	var emptyObject = {'*': [_.isObject]} // all keys have array of objects for values
-	var emptyObject_ = {'*': [{}] }
+function schemingJson(exports){
+	// scheming json
+	// -------------
 
-To match an object with one key (called anything), whose type satisfies the predicate
-	{'*': {}} // matches any key name, with a value of object (does not parse the contents)
-	{'*': isObject}
+	//😏 A lightweight, functional library for describing and validating JSON and JavaScript data
 
-	{'*': []} // matches any key name, with a value of array (does not parse the contents)
-	{'*': isArray}
+	// General Docs
+	// ------------
 
-	{'*': isString}
-	{'*': isFunction}
-	{'*': isBoolean}
+	// Describing JSON
+	// ----------------
 
-	{'*': isUndefined} // note you cannot yet write {'*': undefined}
+	// Consider the JSON structure 
+	// ```javascript
+	// var data = {articles: 
+	//   [{
+	//       title: 'The Title',
+	//       author: 'The Author',
+	//       published: '1/7/53',
+	//       tags: [
+	//         {tagName: 'Stuff'},
+	//         {tagName: 'Garbage'},
+	//         {tagName: 'uninteresting'}
+	//       ]
+	//     },
+	//     {
+	//       title: 'A title',
+	//       author: 'Somebody else',
+	//       published: '1/8/53',
+	//       tags: [
+	//         {tagName: 'Stuff'}
+	//       ]
+	//     }
+	//   ]};
+	// ```
+	//
+	// We could describe this using scheming json like so:
+	// ```javascript
+	// var schema = {articles: 
+	//   [{
+	//     title: isString,
+	//     author: isString,
+	//     published: isDateString,
+	//     tags: [{tagName: isString}]
+	//   }]
+	// };
+	// ```
+	//
+	// And get a parser function using
+	// ```javascript
+	// var articlesParser = parser(schema);
+	//
+	// var articlesValid = articlesParser(someArrayofArticles); // => true
+	// // hooray!
+	// ```
+	//
+	// Where the functions `isString`, and `isDateString` are user-defined (or library-defined) boolean-returning functions ("predicates").
+	//
+	// Alternatively, we could build up smaller schema pieces, and then combine them:
+	// ```javascript
+	// var tag = {tagName: isString};
+	// var article = {title: isString, author: isString, published: isDateString, tags[tag]};
+	// var articles = {articles: [article]};
+	// ```
 
-To match an object with one key (called 'name'), all remaining keys have any value
-	{name: isString, '**':'*'}
 
-To match an object with one key (called 'name'), whose value satisfies the isString predicate
-	{name: isString}
+	// Special values/operators
+	// ------------------------
+	// **
+	// --
+	// `**` says that we should apply the predicate to all other fields in an object that we haven't already specified.
 
-To match an object with one key (called 'name'), whose value is exactly 'Literal'
-	{name: 'Literal'}
+	// For example, this would also match our article example
+	// ```javascript
+	// var singleArticleAlt = {
+	//   title: isString,
+	//   tags: [tag],
+	//   '**': isString
+	// };
+	// ```
+	// This says 'match an object with a key named `title` that's a string, with a key named `tags` holding an array of tag objects, and with 0 or more keys named anything that are all strings.
 
-Special access to keys in the same object $name$ is the same as get the value of name -> d.name
-	{tags: [{price: number, yen:toYen('$price$')}]}
-	{tags: [{price: number, yen:toYen(function(d) { return d.price }) }]}
-*/
+	// *
+	// -
+	// `*` says that we should ignore either the key name or the type of value
+	// ```javascript
+	// var acceptAllNames = {name: '*'};
+	// ```
+	// Will match any object with one key called `name` that has any value.
+
+	// `*` can also appear in the key selector
+	// ```javascript
+	// var nameAndFunc = {name: '*', '*': isFunction};
+	// ```
+
+	// `*` can be used for multiple key value wildcards. However, since JavaScript object keys must be unique, it must be
+	// written like `*something*` (any arbitrary name between two *s).
+
+	// ```javascript
+	// var twoStrings = {'*a*': isString, '*b*': isString};
+	// ```
+	// This operator is super buggy right now :-(
+
+	// {} and []
+	// ---------
+
+	// The empty object and empty array predicates will match either an object or an array, but not look at its contents.
+	// If we didn't care about the contents of our article tags we could have written
+	// ```javascript
+	// var tagsPresentButUnaccountedFor = {title: isString, author: isString, published: isDateString, tags []};
+	// ```
+
+	// If all we wanted to do was make sure that each article in our article array was an object
+	// ```javascript
+	// var articles_array = {articles: [{}]};
+	// ```
+
+	// Both the empty array and empty object notation are shorthands for `isArray` and `isObject` predicates.
+
+	// $...$
+	// -----
+	// The dollar sign operators allow lookup of sibling key values within the same object.
+
+	// ```javascript
+	//   {title: isString, author: myCoolLookupFunction('$title$')}
+	// ```
+
+	// Coming soon: how to write functions that can accept `$...$` arguments.
 
 
-// Specials
+	// Composing predicate functions
+	// -----------------------------
+
+	// The `composePredsWith` function takes an array of 1-argument predicates and pipes them together using `glue`.
+	// By default, predicates are glued together with `&&`.
+
+	// As an example, let's make a predicate that only allows non-empty arrays
+	// ```javascript
+	// var isNonEmptyArray = compose1PredsWith([function(v){return !isEmpty(v)}, isArray], and);
+	// ```
+	// or a parser that allows either an empty array or an array of tags
+	// ```javascript
+	// var tagsOrEmpty = compose1PredsWith([parser([tag]), isEmptyArray], or);
+	// ```
+
+	// To hide the explicit function application, scheming json also provides a composer called `o`.
+
+	// The Composer
+	// ------------
+	// The composer is an easier way of using `composePredicatesWith`.
+	// Initiall, the first predicate is wrapped with `o`, (e.g. `o(myPred)`),
+	// and subsequent predicates can be combined with it using the 
+	// `.and(...)`, `.or(...)`, `.nand(...)`, and `.nor(...)` methods.
+	// For example
+	// 
+	// ```javascript
+	// var compoundChain = o(myPred).and(myPred1).nand(myPred2);
+	// ```
+	// 
+	// To evaluate the chain, either pass in a value after the last item
+	// (i.e. `o(myPred).and(myPred1).nand(myPred2)(theValue)`)
+	// or use `()` to get a normal function that can be used on a value
+	// 
+	// ```javascript
+	// var compoundPred = o(myPred).and(myPred1).nand(myPred2)();
+	// var result = compoundPred(myVal);
+	// ```
+
+// (The rest of the code)
+// ----------------------
+
+// Definition of Specials
 // --------
-// Definitions for parsing special operators from strings
+// **Definitions for parsing special operators from strings**
 var SPECIALS = [
-	// the `*` operator, matches just `'*`', or `*...*` (two `*` with anything inbetween)
+	// The `*` operator, matches just `'*'`, or `'*...*'` (two `*` with anything inbetween)
 	{name: 'STAR',		rule: /(?:^\*$)|(?:^\*[^*]+\*$)/},
-	// the `**` operator, matches just `'**'`
+	// The `**` operator, matches just `'**'`
 	{name: 'STAR_STAR',	rule: /^\*{2}$/},
-	// the `$...$` sibling value operator, matches anyting between two `$`
-	// the regex captures the content between the dollar signs as a group
+	// The `$...$` sibling value operator, matches anyting between two `$`.
+	// The regex captures the content between the dollar signs as a group
 	{name: 'SIBLING',	rule: /^\$(.+)\$$/}
 ];
 
-// Parse out any matching special symbol in a string `s`
+// **Parse out any matching special symbol in a string `s`**
 function parseSpecial(s) {
 
 	function parseSymbol(s, regex, selector) {
@@ -90,7 +229,7 @@ var isUndefined	= _.isUndefined;
 var isEmpty 	= _.isEmpty;
 var isNonempty	= function(val) { return !_.isEmpty(val) }
 
-// used for the '*' operator
+// used for the `*` operator
 var isAnything  = function() { return true; }
 
 // see if array a is a subset or b
@@ -112,25 +251,27 @@ function nor(a,b) { return (!a && !b); };
 function andWrapped(a,b) { return (a() && b()); }
 function orWrapped(a,b) { return (a() || b()); }
 
+// **Test for a stop value**
+//
 // JSON only has two compound data types, Objects and Arrays.
 // If something is not an object, or an array, we want to treat it as a value
 // This is a little fuzzy, since we also want to treat functions as a function value
 // not an object (even though they are Objects), as it allows is to substitute schema
 // pieces with parser functions
 function isStopValue(val) {
-	// since `typeof Function` is `'function'`, this will only return true
+	// since `typeof` a function is `'function'`, this will only return true
 	// for the kind of Objects we're interested in
 	function isPrimative(val) { return (typeof val !== 'object') } 
 	// now make sure that our object isn't an Array, and isn't an empty array
 	// since we want to treat empty objects and empty arrays as shorthands for
-	// {} -> isObject, [] -> is array
+	// `{} = isObject`, and `[] = isArray`.
 	return isPrimative(val) || (_.isObject(val) && _.isEmpty(val)); 
 }
 
 // Utility Functions
 // -----------------
 
-// Compose an aray of two-argument predicates together using the chaining function `glue`
+// **Compose an aray of two-argument predicates together using the chaining function `glue`**
 function composePredicatesWith(preds, glue) {
 	// if no chaining function is used, default to `and`
 	glue = glue || and;
@@ -150,6 +291,9 @@ function composePredicatesWith(preds, glue) {
 	});
 }
 
+// **Compose an aray of two-argument predicates together using the chaining function `glue`, 
+// wrapping the values in thunks**
+//
 // Like `composePredicatesWith`, but it wraps the parsers in thunks
 // to avoid evaluating a possibly undefined value (like calling `.reduce` on an object).
 // This is mainly so that JavaScript's built-in short circuiting can skip over evaluating
@@ -181,7 +325,7 @@ function composePredicatesWithWrapped(preds, glue) {
 // The composer is an easier way of using `composePredicatesWith`.
 // Initiall, the first predicate is wrapped with `o`, (e.g. `o(myPred)`),
 // and subsequent predicates can be combined with it using the 
-// `.and(...)`, `.or(...)`, `.nand(...)`, and `.nor(...) methods.
+// `.and(...)`, `.or(...)`, `.nand(...)`, and `.nor(...)` methods.
 // For example
 // 
 // ```javascript
@@ -203,10 +347,9 @@ function o(initial) {
 	var INITIALIZED = false;
 
 
-	// Composer utility functions
-	// -----------------
+	// **Composer utility functions**
 
-	// if the function we're trying to chain is also a composer, convert the chain
+	// **expand** If the function we're trying to chain is also a composer, convert the chain
 	// to a function by calling it (allows for nested chains/composition of chains)
 	function expand(f) {
 		// check for some meta-data on the function to see if it's a normal function
@@ -215,7 +358,7 @@ function o(initial) {
 		return f;
 	}
 
-	// Transform any two argument function into a new function that applies the threaded state
+	// **applyState** Transform any two argument function into a new function that applies the threaded state
 	// as the first argument, and an input value to the second argument. 
 	function applyState(g) {
 		return function(f) {
@@ -225,7 +368,7 @@ function o(initial) {
 		}
 	}
 
-	// short-circuiting `and`. Takes a function `f` as a parameter and returns a new function
+	// **statefulAnd** Short-circuiting `and`. Takes a function `f` as a parameter and returns a new function
 	// that acceps the threaded `state` and a value `x`. It returns the result of `and`ing the
 	// threaded state with `f(x)`.
 	function statefulAnd(f) { // allows short circuit
@@ -234,7 +377,7 @@ function o(initial) {
 		}
 	}
 
-	// short-circuiting `or`. Takes a function `f` as a parameter and returns a new function
+	// **statefulOr** Short-circuiting `or`. Takes a function `f` as a parameter and returns a new function
 	// that acceps the threaded `state` and a value `x`. It returns the result of `or`ing the
 	// threaded state with `f(x)`.
 	function statefulOr(f) {
@@ -243,7 +386,7 @@ function o(initial) {
 		}
 	}
 	
-	// short-circuiting `nand`. Takes a function `f` as a parameter and returns a new function
+	// **statefulNand** Short-circuiting `nand`. Takes a function `f` as a parameter and returns a new function
 	// that acceps the threaded `state` and a value `x`. It returns the result of `nand`ing the
 	// threaded state with `f(x)`.
 	function statefulNand(f) {
@@ -254,7 +397,7 @@ function o(initial) {
 		}
 	}
 	
-	// short-circuiting `nor`. Takes a function `f` as a parameter and returns a new function
+	// **statefulNor** Short-circuiting `nor`. Takes a function `f` as a parameter and returns a new function
 	// that acceps the threaded `state` and a value `x`. It returns the result of `nor`ing the
 	// threaded state with `f(x)`.
 	function statefulNor(f) {
@@ -266,7 +409,7 @@ function o(initial) {
 	}
 
 
-	// Takes an array of functions that take a threaded state argument, and a value argument
+	// **threadState** Takes an array of functions that take a threaded state argument, and a value argument
 	// and returns a function that will thread a value `v` through all the composed chain of functions
 	function threadState(funcs) {
 		return function(v) {
@@ -276,9 +419,8 @@ function o(initial) {
 		}
 	};
 
-	// The main composer function/object
-	// ---------------------------------
-	//
+	// **The main composer function/object**
+	
 	// This is a function, not an object literal so that we can call it
 	// as of es5 there's no way to make something callable down the road.
 	function o_o(){
@@ -289,63 +431,66 @@ function o(initial) {
 			if(INITIALIZED) {
 				return threadState(funcs);
 			} else {
-				// oops, we don't have any functions to work with!
+				// Oops, we don't have any functions to work with!
 				// Could return the identity function or something here,
 				// (or a function that always returns `true`), but it seems like
 				// it would probably be an error, not an intentional action on the
 				// part of the user.....
 				throw new Error("Not initialized!");
 			}
-		// the call had 1 or more arguments, so we're applying the chain to a value
+		// The call had 1 or more arguments, so we're applying the chain to a value
 		} else {
-			// if this is the first time we've recieved a value, this is the initial
+			// Ff this is the first time we've recieved a value, this is the initial
 			// function wrapping (which will be bound to the `initial` variable named)
 			// in the function definition of `function o(initial)`
 			if (!INITIALIZED) {
-				// set our tracker to true
+				// Set our tracker to true
 				INITIALIZED = true; 
-				// return the `o` composer object
+				// Return the `o` composer object
 				return this;
 			} else {
-				// create a function from the threaded functions and apply the arguments
+				// Create a function from the threaded functions and apply the arguments
 				// recieved to the composed function
 				return threadState(funcs).apply(this, arguments);
 			}
 		}
 	}
 
-	// set metadata on the composer function to mark it as a composer chain
+	// Set metadata on the composer function to mark it as a composer chain
 	o_o.__IS_COMPOSER__ = true;
 
-	// register the `.and(...)` method
+	// Register the `.and(...)` method
 	o_o.and = function(f) {
 		funcs.push(statefulAnd(expand(f)));
 		return this;
 	}
 
-	// register the `.nand(...)` method
+	// Register the `.nand(...)` method
 	o_o.nand = function(f) {
 		funcs.push(statefulNand(expand(f)));
 		return this;
 	}
 
-	// register the `.or(...)` method
+	// Register the `.or(...)` method
 	o_o.or = function(f) {
 		funcs.push(statefulOr(expand(f)));
 		return this;
 	}
 
-	// register the `.nor(...)` method
+	// Register the `.nor(...)` method
 	o_o.nor = function(f) {
 		funcs.push(statefulNor(expand(f)));
 		return this;
 	}
 
-	// return the composer
+	// Return the composer
 	return o_o;
 }
 
-// Represent a thunk, used for the $sibling$ paser
+// Other utilities/types
+// ---------------------
+
+// **thunk** Represent a thunk, used for the $sibling$ paser
 // could and probably should be refactored to use the composer/chain
 function thunk(f) {
 	// return a function taking an array of arguments to appy to `f` when the thunk
@@ -359,7 +504,7 @@ function thunk(f) {
 	return theThunk;
 }
 
-// Optional type used for chaining objects to nuke the chain if one step fails.
+// **Failure** Optional type used for chaining objects to nuke the chain if one step fails.
 // The `fakeFunctionNames` argument in the constructor is a list of method names
 // that the `Failure` object should have to make it indistinguishable to the original
 // object's API.
@@ -380,7 +525,7 @@ function Failure(fakeFunctionNames) {
 	return this;
 }
 
-// Parse a '$Sibling$' special. Takes a string value `v`, and a function `f` that dispatches
+// **parseSiblingVar** Parse a '$Sibling$' special. Takes a string value `v`, and a function `f` that dispatches
 // on the value returned by the sibling parser
 function parseSiblingVar(v, f) {
 	var token = parseSpecial(v).filter(function(t){ return t.name === 'SIBLING'; })[0];
@@ -389,7 +534,7 @@ function parseSiblingVar(v, f) {
 	}
 }
 
-// Takes a key name, and returns a function taking an object `d`, and a value `val`
+// **parseSiblingKey** Takes a key name, and returns a function taking an object `d`, and a value `val`
 // and check to see whether the value of `keyName` in the object is equal to `val`
 // Used in the `$sibling$` special parser
 function parseSiblingKey(keyName) {
@@ -404,7 +549,7 @@ function parseSiblingKey(keyName) {
 // Parsers
 // -------
 
-// Return a predicate for a value v
+// **valueParser** Return a predicate for a value v
 // Defaults to a parser that check to see if any input is equal to v
 function valueParser(v) {
 	var p = function(x){ return _.isEqual(x,v); };
@@ -417,7 +562,7 @@ function valueParser(v) {
 	return p;
 }
 
-// Returns compound parser for each item inside of an array `a` (using `and`)
+// **arrayParser** Returns compound parser for each item inside of an array `a` (using `and`)
 function arrayParser(a) {
 	// get a parser for each value inside of `a`
 	var preds = a.map(function(v){ return parser(v); });
@@ -437,17 +582,17 @@ function arrayParser(a) {
 	return composePredicatesWithWrapped([isArray, processArray], andWrapped);
 }
 
-// Returns a compound parser matching schema rules for each key and value of an object `o`
+// **objectParser** Returns a compound parser matching schema rules for each key and value of an object `o`
 function objectParser(o) {
 	// For holding the specials we parse out from the object
 	var SPECIALS_USED;
 	var SPECIALS_ENV;
 	
-	// Returns true if we are parsing any specials
+	// **Returns true if we are parsing any specials**
 	function SPECIALS_PRESENT() { return _.keys(SPECIALS_ENV.preds).length > 0; }
 
-	// Filter out any keys in the object that we're going to parsing in a special
-	// and remove them from the general pool of keys we're going to consider.
+	// **Filter out any keys in the object that we're going to parsing in a special
+	// and remove them from the general pool of keys we're going to consider.**
 	//
 	// Takes a `config` object with
 	// * the object we're parsing,
@@ -464,11 +609,11 @@ function objectParser(o) {
 		var keys = config.keys;
 		var specialsInObject = config.specialsInObject;
 
-		// only look at the specials that match `specialName`, and then get the schema object
+		// Only look at the specials that match `specialName`, and then get the schema object
 		// values (which hold predicates) for each key that has the special.
 		var preds = specialsInObject.filter(function(v){ return v.name === specialName }).map(function(v){ return obj[v.input] });
 		
-		// all the rest of the keys that don't use any special operator
+		// All the rest of the keys that don't use any special operator
 		// by checking to see if the key value matches an input for a found
 		// parsed special
 		var remainingKeys = keys.filter(function(v) { 
@@ -478,7 +623,7 @@ function objectParser(o) {
 			return notInSpecials;
 		});
 
-		// if there are any specials used in the object we're considering
+		// If there are any specials used in the object we're considering
 		if (preds.length > 0) {
 			// get any already registered preds for this special name
 			// and combine them with the ones we found.
@@ -490,22 +635,22 @@ function objectParser(o) {
 		return {obj: obj, keys: remainingKeys, specialsInObject: specialsInObject, preds: config.preds};
 	}
 
-	// Return a parser for a special called `SPECIAL_NAME` using the special evaluator `f`
+	// **Return a parser for a special called `SPECIAL_NAME` using the special evaluator `f`**
 	function test_special(f, SPECIAL_NAME){
 		return function(obj) {
-			// look up the preds we need for the special in the `SPECIALS_ENV`
+			// Look up the preds we need for the special in the `SPECIALS_ENV`
 			var preds = SPECIALS_ENV.preds[SPECIAL_NAME];
-			// get the keys that don't use specials
+			// Get the keys that don't use specials
 			var remaining_keys = SPECIALS_ENV.keys;
-			// get the keys that do use specials
+			// Get the keys that do use specials
 			var affected_keys = _.difference(_.keys(obj), remaining_keys); 
 
-			// apply the evaluator `f` for our special and return the result
+			// Apply the evaluator `f` for our special and return the result
 			return f(obj, remaining_keys, affected_keys, preds);
 		}
 	};
 
-	// The evaluator for the * special
+	// **The evaluator for the * special**
 	function test_star(obj, remaining_keys, affected_keys, preds) {
 			function incrementIfExists(o, k, inc) {
 				if(o[k]) {
@@ -538,7 +683,7 @@ function objectParser(o) {
 			return _.isEqual(pred_counts, pred_successes);
 		};
 
-	// evaluator for the ** special
+	// **evaluator for the ** special**
 	function test_star_star(obj, remaining_keys, affected_keys, preds) {
 		// make sure that any of the preds used for the ** special
 		// are true all keys that are going to be evaulated using the special
@@ -551,34 +696,34 @@ function objectParser(o) {
 		}, true);
 	};	
 
-	// Evaluator for keys that don't use specials
+	// **Evaluator for keys that don't use specials**
 	function test_regular_keys(obj) {
-		// the keys we expected to find, based on the schema
+		// The keys we expected to find, based on the schema
 		var expected_keys = SPECIALS_ENV.keys;
-		// keys in the object that we found that weren't described in the schema
+		// Keys in the object that we found that weren't described in the schema
 		var unexpected_keys = _.difference(_.keys(obj), expected_keys);
 
-		// make sure all of the predicates in the schema hold for the expected keys
+		// Make sure all of the predicates in the schema hold for the expected keys
 		var expected_valid = expected_keys.reduce(function(acc,k){
-			// the top level object from objectParser(o), should probably refactor out
+			// The top level object from `objectParser(o)`, should probably refactor out
 			var currentPred = parser(o[k]);
 			if(currentPred.__IS_THUNK__) {
-					// pass in the object context if our pred is a thunk
-					// used for $sibling$
+					// Pass in the object context if our pred is a thunk
+					// used for `$sibling$`
 					return acc && currentPred([obj, obj[k]]);
 				}
 			return acc && currentPred(obj[k]);
 		}, true);
 
-		// is it ok that we have any unexpected keys? If we're using specials, yes.
+		// Is it ok that we have any unexpected keys? If we're using specials, yes.
 		var unexpected_ok = SPECIALS_PRESENT();
 
-		// return false if we found unexpected values and weren't using specials,
+		// Return false if we found unexpected values and weren't using specials,
 		// otherwise return our results for evaluating the expected keys
 		return (unexpected_keys.length > 0)? (expected_valid && unexpected_ok) : expected_valid;
 	}
 
-	// Test the object's keys using `test_regular_keys` and any specials evaulators
+	// **Test the object's keys using `test_regular_keys` and any specials evaulators**
 	function testObjectKeys(obj) {
 		var regular = test_regular_keys(obj);
 		var specials = SPECIALS_USED.reduce(function(acc, current){
@@ -589,7 +734,7 @@ function objectParser(o) {
 			}
 		}, true);
 
-		// if we're using specials, make sure that both the specials evaluation
+		// If we're using specials, make sure that both the specials evaluation
 		// and the regular evaluation are true. Otherwise, we only care that the regular
 		// keys are true;
 		return (SPECIALS_PRESENT())? (regular && specials) : regular;
@@ -599,29 +744,29 @@ function objectParser(o) {
 	function equalKeys(x) { return _.isEqual(_.keys(x).sort(), SPECIALS_ENV.keys.sort()); }
 	function subSetKeys(x) { return isSubset(SPECIALS_ENV.keys, _.keys(x)); }
 
-	// get an array of specials used in the object by testing each key in `o`
+	// Get an array of specials used in the object by testing each key in `o`
 	var specialsInObject = _.flatten(_.keys(o).map(function(v){ return parseSpecial(v) }));
 
-	// define which specials we're going to test for in the object keys
+	// Define which specials we're going to test for in the object keys
 	var SPECIALS_USED = ['STAR_STAR', 'STAR'];
 
-	// set up our environment by filtering out the keys that are used by specials
+	// Set up our environment by filtering out the keys that are used by specials
 	// from the regular object keys
 	var SPECIALS_ENV = SPECIALS_USED.reduce(function(acc,current){
 			return genericStar(acc, current);
 		}, {obj: o, keys: _.keys(o), specialsInObject: specialsInObject, preds: {}});
 
-	// register our specials evaluators with the environment
+	// Register our specials evaluators with the environment
 	SPECIALS_ENV.test = {};
 	SPECIALS_ENV.test['STAR'] = test_special(test_star, 'STAR');
 	SPECIALS_ENV.test['STAR_STAR'] = test_special(test_star_star, 'STAR_STAR');
 
-	// start building up the object parser
+	// Start building up the object parser
 	var preds = [];
-	// add object test
+	// Add object test
 	preds.push(testObjectKeys);
 
-	// if no specials are used we want to be more strict that all keys in the object match
+	// Ff no specials are used we want to be more strict that all keys in the object match
 	// the keys specified in the schema.
 	if (SPECIALS_PRESENT()) {
 		preds.push(subSetKeys);
@@ -632,16 +777,16 @@ function objectParser(o) {
 		preds.push(equalKeys);
 	}
 
-	// can't be {} (since we're using that as a shorthand for isObject)
+	// Can't be {} (since we're using that as a shorthand for isObject)
 	preds.push(isNonempty);
-	// make sure it's really an object! If this fails, all other tests will be skipped
+	// Make sure it's really an object! If this fails, all other tests will be skipped
 	preds.push(isObject);
 
-	// return the composed object parser
+	// Return the composed object parser
 	return composePredicatesWithWrapped(preds, andWrapped);
 }
 
-// The combined parser generator
+// **The combined parser generator**
 function parser(v) {
 	// default value parser fallback
 	var p = valueParser; 
@@ -676,11 +821,11 @@ function parser(v) {
 			// right now we're assuming that there can only be one special
 			// per string (which isn't true), but this works for now
 			switch (specials[0].name) {
-				// match * up to isAnything
+				// match `*` up to isAnything
 				case 'STAR':
 					p = function(x){ return isAnything; };
 					break;
-				// match up $...$ to the sibling parser
+				// match up `$...$` to the sibling parser
 				case 'SIBLING':
 					p = function(x){return parseSiblingVar(x, parseSiblingKey)};
 					break;
@@ -695,3 +840,11 @@ function parser(v) {
 	return p(v);
 }
 
+// register the components to export
+exports['parser'] = parser;
+exports['o'] = o;
+exports['Failure'] = Failure;
+
+return exports;
+
+};
