@@ -206,10 +206,20 @@ function o(initial) {
 	// }
 
 	function nand(a,b) { return not(and(a,b)); };
-	var statefulNand = applyState(nand);
+	// var statefulNand = applyState(nand);
+	function statefulNand(f) {
+		return function(state, x) {
+			return !state || !f(x);  // === !(state && f(x))
+		}
+	}
 
 	function nor(a,b) { return not(or(a,b)); };
-	var statefulNor = applyState(nor);
+	// var statefulNor = applyState(nor);
+	function statefulNor(f) {
+		return function(state, x) {
+			return !state && !f(x); // === !(state || f(x))
+		}
+	}
 
 	function threadState(funcs) {
 		return function(v) {
