@@ -71,7 +71,15 @@ var isAnything  = function() { return true; }
 function id(x) { return x; }
 function not(x) { return (!x); };
 function and(a,b) { return (a && b); };
-function or(a,b) { return (a || b); };
+
+function andWrapped(a,b) { return (a() && b()); }
+
+function a() { return false; }
+function b() { return foo.bar; }
+
+function or(a,b) { return (a || b); }
+function orWrapped(a,b) { return (a() || b()); }
+
 
 function isStopValue(val) {
 	function isPrimative(val) { return (typeof val !== 'object') } // since typeof Function is 'function'
@@ -108,6 +116,24 @@ function composePredicatesWith(funcs, glue) {
 		var c = valueParser(current);
 		return function(x) { 
 			return glue(acc(x), c(x)); 
+		}; 
+	});
+}
+
+function composePredicatesWithWrapped(funcs, glue) {
+	glue = glue;
+
+	if (funcs.length < 2) {
+		return valueParser(funcs[0]); // need at least two arguments for and, or, glue etc
+	}
+
+	return funcs.reduce(function(acc, current) {
+		var c = valueParser(current);
+		return function(x) { 
+			var wrapped_acc = function() { return acc(x); } //wrapping the values allows the boolean short-circuiting
+			var wrapped_c = function() { return c(x); }	// to keep undefined values (i.e. calling reduce on an Object)
+															// from being evaluated
+			return glue(wrapped_acc, wrapped_c); 
 		}; 
 	});
 }
@@ -254,7 +280,9 @@ function arrayParser(a) {
 		}, true);
 	}
 
-	return composePredicatesWith([processArray, isArray], and);
+	//return composePredicatesWith([processArray, isArray], and);
+	return composePredicatesWithWrapped([isArray, processArray], andWrapped); // wrap values to make sure if isArray fails, the rest of the computation short circuits
+		// otherwise the call to a.reduce generates an exception
 }
 
 function objectParser(o) {
