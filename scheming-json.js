@@ -164,10 +164,10 @@ function o(initial) {
 		return this;
 	}
 
-	o_o.not = function() {
-		funcs.push(statefulNot);
-		return this;
-	}
+	// o_o.not = function() {
+	// 	funcs.push(statefulNot);
+	// 	return this;
+	// }
 
 	function force(f) {
 		if(f.__IS_COMPOSER__) { return f() }
@@ -183,17 +183,27 @@ function o(initial) {
 		}
 	}
 
-	function and(a,b) { return a && b; }
-	var statefulAnd = applyState(and);
+	function and(a,b) { return a && b; } // make lazy versions
+	function statefulAnd(f) { // allows short circuit
+		return function(state, x) {
+			return (state && f(x));
+		}
+	}
+
 
 	function or(a,b) { return a || b; }
-	var statefulOr = applyState(or);
+	function statefulOr(f) {
+		return function(state, x) {
+			return (state || f(x));
+		}
+	}
 
 	function not(x) { return !x; }
-
-	function statefulNot(state, x) {
-		return !state;
-	}
+	// function statefulNot(f) {
+	// 	return function(state, x) {
+	// 		return !state;
+	// 	}
+	// }
 
 	function nand(a,b) { return not(and(a,b)); };
 	var statefulNand = applyState(nand);
@@ -428,7 +438,8 @@ function objectParser(o) {
 	preds.push(isNonempty);
 	preds.push(isObject);
 
-	return composePredicatesWith(preds, and);
+	// return composePredicatesWith(preds, and);
+	return composePredicatesWithWrapped(preds, andWrapped);
 }
 
 function parser(v) {
