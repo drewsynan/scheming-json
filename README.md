@@ -54,4 +54,4 @@ var articles = {articles: [article]};
 ```
 All of the type checkers (like `isString` or `isDateString`) are just functions that take some input and return either true or false (a "predicate"). The function could be something from the JavaScript core (`Array.isArray`), something that we define is a one off (`function greaterThanThree(x){return x>3;}`), or a parser that we've generated previously (like the parser functioned returned by `parser(tag)`)
 
-### See the (docs)[https://drewsynan.github.io/scheming-json/] for more!
+### See the [docs](https://drewsynan.github.io/scheming-json/) for more!
