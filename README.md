@@ -1,5 +1,5 @@
 # scheming-json
-😏 A lightweight, functional library for describing and validating JSON and JavaScript data
+😏 A lightweight, functional library for describing and validating JSON and JavaScript data. Scheming JSON tries to make the description of your data as close to what your data actually is as possible (your schemas look like your data, and your data looks like your schemas).
 
 #Describing JSON
 Let's say we have some data we want to validate
