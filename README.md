@@ -2,7 +2,7 @@
 😏 A lightweight, functional library for describing and validating JSON and JavaScript data
 
 #Describing JSON
-Consider the JSON structure 
+Let's say we have some data we want to validate
 ```javascript
 var data = {articles: 
   [{
@@ -25,7 +25,7 @@ var data = {articles:
     }
   ]};
 ```
-We could describe this using scheming json like so:
+How would we create rules that determine if it's valid or not? An example scheming json ruleset (schema) for our data could look like this:
 ```javascript
 var schema = {articles: 
   [{
@@ -36,7 +36,9 @@ var schema = {articles:
   }]
 };
 ```
-And get a parser function using
+Which says that we have a root object with a key called `articles`, which contains an array of one or more objects each having a key called `title` (who's type is a string), `author` (also a string), `datePublished` (using a custom type called `dateString` that we defined), and `tags`, which contains an array of objects (each object having only one field named `tagName`, whose type is a string).
+
+To translate our ruleset into something that we can evaulate json and javascript variables on, we need a parser function. To get a function the parser, use the `parser` function, and apply it to some data to parse.
 ```javascript
 var articlesParser = parser(schema);
 
@@ -44,14 +46,12 @@ var articlesValid = articlesParser(someArrayofArticles); // => true
 // hooray!
 ```
 
-Where the functions `isString`, and `isDateString` are user-defined (or library-defined) boolean-returning functions ("predicates").
-
 Alternatively, we could build up smaller schema pieces, and then combine them:
 ```javascript
 var tag = {tagName: isString};
 var article = {title: isString, author: isString, published: isDateString, tags[tag]};
 var articles = {articles: [article]};
 ```
+All of the type checkers (like `isString` or `isDateString`) are just functions that take some input and return either true or false (a "predicate"). The function could be something from the JavaScript core (`Array.isArray`), something that we define is a one off (`function greaterThanThree(x){return x>3;}`), or a parser that we've generated previously (like the parser functioned returned by `parser(tag)`)
 
-
-### See the docs for more!
+### See the (docs)[https://drewsynan.github.io/scheming-json/] for more!
