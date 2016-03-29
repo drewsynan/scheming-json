@@ -175,13 +175,44 @@ function schemingJson(exports){
 // **Definitions for parsing special operators from strings**
 var SPECIALS = [
 	// The `*` operator, matches just `'*'`, or `'*...*'` (two `*` with anything inbetween)
-	{name: 'STAR',		rule: /(?:^\*$)|(?:^\*[^*]+\*$)/},
+	{name: 'STAR',		rule: /(?:^\*$)/},
+	{name: 'STAR',		rule: /(?:^\*([^*]+)\*$)/},
 	// The `**` operator, matches just `'**'`
 	{name: 'STAR_STAR',	rule: /^\*{2}$/},
 	// The `$...$` sibling value operator, matches anyting between two `$`.
 	// The regex captures the content between the dollar signs as a group
-	{name: 'SIBLING',	rule: /^\$(.+)\$$/}
+	{name: 'SIBLING',	rule: /^\$(.+)\$$/},
+	{name: 'OPTIONAL', 	rule: /^\((.+)\)$/}
 ];
+
+
+function p_tail(s, acc) {
+	function parse1(s, rule) {
+		if(!rule || !s) { return undefined; }
+
+		var matches = s.match(rule.rule);
+		var anyMatched = !_.isNull(matches);
+
+		if(anyMatched) {
+			return (matches[matches.length - 1] || '');
+			return trimmed;
+		} else {
+			return undefined;
+		}
+	}
+
+	function selectRule(s) {
+		return SPECIALS.filter(function(v){ return !_.isUndefined(parse1(s,v))})[0];
+	}
+
+	acc = acc || [];
+
+	var rule = selectRule(s);
+	var result = parse1(s, rule);
+	
+	if (result === undefined) return acc;
+	return p_tail(result, acc.concat({input: s, special: rule.name, result: result}));
+}
 
 // **Parse out any matching special symbol in a string `s`**
 function parseSpecial(s) {
