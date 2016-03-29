@@ -211,7 +211,7 @@ function p_tail(s, acc) {
 	var result = parse1(s, rule);
 	
 	if (result === undefined) return acc;
-	return p_tail(result, acc.concat({input: s, special: rule.name, result: result}));
+	return p_tail(result, acc.concat({input: s, name: rule.name, result: result}));
 }
 
 // **Parse out any matching special symbol in a string `s`**
