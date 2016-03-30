@@ -779,11 +779,13 @@ function objectParser(o) {
 	function equalKeys(x) { return _.isEqual(_.keys(x).sort(), SPECIALS_ENV.keys.sort()); }
 	function subSetKeys(x) { return isSubset(SPECIALS_ENV.keys, _.keys(x)); }
 
-	// Get an array of specials used in the object by testing each key in `o`
-	var specialsInObject = _.flatten(_.keys(o).map(function(v){ return parseSpecial(v) }));
-
 	// Define which specials we're going to test for in the object keys
 	var SPECIALS_USED = ['STAR_STAR', 'STAR'];
+
+	// Get an array of specials used in the object by testing each key in `o`
+	var specialsInObject = _.flatten(
+			_.keys(o).map(function(v){ return parseSpecial(v) })
+		).filter(function(v){ return _.indexOf(SPECIALS_USED, v.name) !== -1;});
 
 	// Set up our environment by filtering out the keys that are used by specials
 	// from the regular object keys
