@@ -624,6 +624,9 @@ function objectParser(o) {
 	
 	// **Returns true if we are parsing any specials**
 	function SPECIALS_PRESENT() { return _.keys(SPECIALS_ENV.preds).length > 0; }
+	function WILD_CARDS() { 
+		return !!SPECIALS_ENV['STAR'] && !!SPECIALS_ENV['STAR_STAR']; 
+	}
 
 	// **Filter out any keys in the object that we're going to parsing in a special
 	// and remove them from the general pool of keys we're going to consider.**
@@ -638,14 +641,22 @@ function objectParser(o) {
 	// Returns a specials object with same key names a `config`, but with keys that have 
 	// been filtered according to the rules of the special, and object contining all the
 	// necessary predicates to parse the special on the object.
-	function genericStar(config/*={obj, keys, specialsInObject}*/, specialName){
+	function genericStar(config/*={obj, keys, specialsInObject, preds, spokenFor}*/, specialName){
 		var obj = config.obj;
 		var keys = config.keys;
 		var specialsInObject = config.specialsInObject;
 
+		var matchingSpecials = specialsInObject.filter(function(v){ return v.name === specialName });
+
+		var spokenFor = matchingSpecials.filter(function(v){ return v.result !== ""}).map(function(v){return v.result});
+
+		if (spokenFor.length > 0) {
+			config.spokenFor[specialName] = [].concat(config.spokenFor[specialName] || []).concat(spokenFor);
+		}
+
 		// Only look at the specials that match `specialName`, and then get the schema object
 		// values (which hold predicates) for each key that has the special.
-		var preds = specialsInObject.filter(function(v){ return v.name === specialName }).map(function(v){ return obj[v.input] });
+		var preds = matchingSpecials.map(function(v){ return obj[v.input] });
 
 		// All the rest of the keys that don't use any special operator
 		// by checking to see if the key value matches an input for a found
@@ -666,7 +677,7 @@ function objectParser(o) {
 			config.preds[specialName] = [].concat(config.preds[specialName] || []).concat(preds);
 		}
 
-		return {obj: obj, keys: remainingKeys, specialsInObject: specialsInObject, preds: config.preds};
+		return {obj: obj, keys: remainingKeys, specialsInObject: specialsInObject, preds: config.preds, spokenFor: config.spokenFor};
 	}
 
 	// **Return a parser for a special called `SPECIAL_NAME` using the special evaluator `f`**
@@ -677,10 +688,11 @@ function objectParser(o) {
 			// Get the keys that don't use specials
 			var remaining_keys = SPECIALS_ENV.keys;
 			// Get the keys that do use specials
-			var affected_keys = _.difference(_.keys(obj), remaining_keys); 
+			var affected_keys = _.difference(_.keys(obj), remaining_keys);
+			var spokenFor = SPECIALS_ENV.spokenFor[SPECIAL_NAME];
 
 			// Apply the evaluator `f` for our special and return the result
-			return f(obj, remaining_keys, affected_keys, preds);
+			return f(obj, remaining_keys, affected_keys, preds, spokenFor);
 		}
 	};
 
@@ -729,10 +741,25 @@ function objectParser(o) {
 			
 			return (a && predsMatchForK);
 		}, true);
-	};	
+	};
+
+	// **evaluator for the (optional) special**
+	function test_optional(obj, remaining_keys, affected_keys, preds, spokenFor) {
+		return spokenFor.reduce(function(acc, current){
+			if(obj[current]) {
+				var allPreds = composePredicatesWithWrapped(preds, andWrapped)(obj[current]);
+				return (acc && allPreds);
+			}
+			else {
+				return (acc && true);
+			}
+		}, true);
+	}	
 
 	// **Evaluator for keys that don't use specials**
 	function test_regular_keys(obj) {
+		console.log("regular keys");
+
 		// The keys we expected to find, based on the schema
 		var expected_keys = SPECIALS_ENV.keys;
 		// Keys in the object that we found that weren't described in the schema
@@ -751,7 +778,7 @@ function objectParser(o) {
 		}, true);
 
 		// Is it ok that we have any unexpected keys? If we're using specials, yes.
-		var unexpected_ok = SPECIALS_PRESENT();
+		var unexpected_ok = SPECIALS_PRESENT() && allSpokenFor(unexpected_keys);
 
 		// Return false if we found unexpected values and weren't using specials,
 		// otherwise return our results for evaluating the expected keys
@@ -775,12 +802,27 @@ function objectParser(o) {
 		return (SPECIALS_PRESENT())? (regular && specials) : regular;
 	}
 
+	function allSpokenFor(unexpected_arr) {
+
+		function inSpoken(x) {
+			return _.keys(SPECIALS_ENV.spokenFor).reduce(function(acc, current){
+				var found = SPECIALS_ENV.spokenFor[current].indexOf(x) !== -1;
+				return acc || found;
+			}, false);
+		}
+
+		var allFound = unexpected_arr.reduce(function(acc, current){ 
+			return acc && inSpoken(current); 
+		}, true);
+
+		return allFound;
+	}
 
 	function equalKeys(x) { return _.isEqual(_.keys(x).sort(), SPECIALS_ENV.keys.sort()); }
 	function subSetKeys(x) { return isSubset(SPECIALS_ENV.keys, _.keys(x)); }
 
 	// Define which specials we're going to test for in the object keys
-	var SPECIALS_USED = ['STAR_STAR', 'STAR'];
+	var SPECIALS_USED = ['STAR', 'OPTIONAL'];//['STAR_STAR', 'STAR', 'OPTIONAL'];
 
 	// Get an array of specials used in the object by testing each key in `o`
 	var specialsInObject = _.flatten(
@@ -791,12 +833,13 @@ function objectParser(o) {
 	// from the regular object keys
 	var SPECIALS_ENV = SPECIALS_USED.reduce(function(acc,current){
 			return genericStar(acc, current);
-		}, {obj: o, keys: _.keys(o), specialsInObject: specialsInObject, preds: {}});
+		}, {obj: o, keys: _.keys(o), specialsInObject: specialsInObject, preds: {}, spokenFor: {}});
 
 	// Register our specials evaluators with the environment
 	SPECIALS_ENV.test = {};
 	SPECIALS_ENV.test['STAR'] = test_special(test_star, 'STAR');
 	SPECIALS_ENV.test['STAR_STAR'] = test_special(test_star_star, 'STAR_STAR');
+	SPECIALS_ENV.test['OPTIONAL'] = test_special(test_optional, 'OPTIONAL');
 
 	// Start building up the object parser
 	var preds = [];
@@ -814,8 +857,6 @@ function objectParser(o) {
 		preds.push(equalKeys);
 	}
 
-	// Can't be {} (since we're using that as a shorthand for isObject)
-	preds.push(isNonempty);
 	// Make sure it's really an object! If this fails, all other tests will be skipped
 	preds.push(isObject);
 
