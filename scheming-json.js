@@ -175,14 +175,14 @@
 // **Definitions for parsing special operators from strings**
 var SPECIALS = [
 	// The `*` operator, matches just `'*'`, or `'*...*'` (two `*` with anything inbetween)
-	{name: 'STAR',		rule: /(?:^\*$)/},
-	{name: 'STAR',		rule: /(?:^\*([^*]+)\*$)/},
+	{name: 'STAR',		rule: /(?:^\*$)/, 			type: ['KEY', 'VALUE']},
+	{name: 'STAR',		rule: /(?:^\*([^*]+)\*$)/,	type: ['KEY', 'VALUE']},
 	// The `**` operator, matches just `'**'`
-	{name: 'STAR_STAR',	rule: /^\*{2}$/},
+	{name: 'STAR_STAR',	rule: /^\*{2}$/,			type: ['KEY']},
 	// The `$...$` sibling value operator, matches anyting between two `$`.
 	// The regex captures the content between the dollar signs as a group
-	{name: 'SIBLING',	rule: /^\$(.+)\$$/},
-	{name: 'OPTIONAL', 	rule: /^\((.+)\)$/}
+	{name: 'SIBLING',	rule: /^\$(.+)\$$/,			type: ['KEY']},
+	{name: 'OPTIONAL', 	rule: /^\((.+)\)$/,			type: ['EXISTENTIAL']}
 ];
 
 
@@ -901,7 +901,6 @@ function parser(v) {
 			switch (specials[0].name) {
 				// match `*` up to isAnything
 				case 'STAR':
-					console.log("STAR");
 					p = function(x){ return isAnything; };
 					break;
 				// match up `$...$` to the sibling parser
@@ -927,3 +926,128 @@ function parser(v) {
 // return exports;
 
 // };
+
+/********* new Object parser *************/
+var SPECIALS_TYPES = ['KEY', 'existential', 'VALUE'];
+
+function isSpecialType(name, type) {
+	return SPECIALS.filter(function(v){ return (v.name === name) && (v.type.indexOf(type) !== -1); }).length > 0;
+}
+
+function isKeySpecial(name)		{ return isSpecialType(name, 'KEY'); }
+function isValueSpecial(name)	{ return isSpecialType(name, 'VALUE'); }
+function isExistentialSpecial(name)	{return isSpecialType(name, 'EXISTENTIAL'); }
+
+var EXISTENTIAL_LOOKUP = {
+	'OPTIONAL': zeroOr_,
+	'STAR': exactly_(1),
+	'STAR_STAR': nOrMore(0),
+	'__literal__': exactly_(1)
+};
+
+var KEY_PRED_LOOKUP = {
+	'STAR': isAnything,
+	'STAR_STAR': isAnything,
+	'__literal__': is
+}
+
+function zeroOr_(f) {
+	return function(x) {
+		return ((x.length === 0) || f(x));
+	}
+}
+
+function exactly_(n) {
+	return function(x) {
+		return x.length === n;
+	}
+}
+
+function nOrMore(n) {
+	return function(x) {
+		return x.length >= n;
+	}
+}
+
+function nOrLess(n) {
+	return function(x) {
+		return x.length <= n;
+	}
+}
+
+function is(v) {
+	return function(x) {
+		return x === v;
+	}
+}
+
+function isAnything(x) { return true; }
+function exactlyOne(x) { return x.length === 1; }
+function zeroOrOne(x) { return (x.length === 0) || (x.length === 1); }
+function zeroOrMore(x) { return x.length >= 0; }
+function oneOrMore(x) { return x.length >= 1; }
+
+function parseOneField(config) {
+	var keyPredicate = config.keyPredicate;
+	var valuePredicate = config.valuePredicate;
+	var existentialPredicate = config.existentialPredicate;
+
+	return function(obj) {
+		var values = {};
+		_.keys(obj).forEach(function(k){
+			if(valuePredicate(obj[k])) values[k] = obj[k];
+		});
+
+		console.log(values);
+
+		var allValuesTrue = _.keys(values).length > 0;
+		var existentialsTrue = existentialPredicate(_.keys(obj));
+		var keysTrue = _.keys(values).reduce(function(acc, current) { return acc && keyPredicate(current); }, true);
+
+		console.log("VALUES: ", allValuesTrue);
+		console.log("EXIST: ", existentialsTrue);
+		console.log("KEYS ", keysTrue);
+
+		return (allValuesTrue && existentialsTrue && keysTrue);
+	}
+}
+
+function makeParserConfig(k, v) {
+	var existentialPred = exactly_(1);
+	var keyPred = is(k);
+	var valuePred = parser(v);
+
+	var specials = parseSpecial(k);
+
+	if(specials.length > 0) {
+		var existentialPreds = specials.map(function(v){return EXISTENTIAL_LOOKUP[v.name]});
+
+		var keyPreds = specials.filter(function(v){ 
+			return isKeySpecial(v.name); 
+		}).map(function(v){return KEY_PRED_LOOKUP[v.name]});
+
+		if (existentialPreds.length > 0) {
+			existentialPred = existentialPreds.reverse().reduce(function(acc, current){
+				return current(acc);
+			});
+		}
+		if (keyPreds.length > 0) {
+			keyPred = composePredicatesWithWrapped(keyPreds, andWrapped);
+		}
+	}
+
+	return {keyPredicate: keyPred, valuePredicate: valuePred, existentialPredicate: existentialPred};
+
+}
+
+function parseWholeObject(o) {
+	var keys = _.keys(o);
+	//console.log(keys);
+
+	var parserConfigs = keys.map(function(k){ return makeParserConfig(k, o[k]); });
+	//console.log(parserConfigs);
+
+	var parsers = parserConfigs.map(function(v){ return parseOneField(v)});
+	//return composePredicatesWithWrapped(parsers, andWrapped);
+	return parsers;
+}
