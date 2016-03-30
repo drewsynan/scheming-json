@@ -1,5 +1,5 @@
-'use strict';
-function schemingJson(exports){
+// 'use strict';
+// function schemingJson(exports){
 	// scheming json
 	// -------------
 
@@ -187,6 +187,8 @@ var SPECIALS = [
 
 
 function p_tail(s, acc) {
+	var selector = _.last;
+
 	function parse1(s, rule) {
 		if(!rule || !s) { return undefined; }
 
@@ -194,8 +196,7 @@ function p_tail(s, acc) {
 		var anyMatched = !_.isNull(matches);
 
 		if(anyMatched) {
-			return (matches[matches.length - 1] || '');
-			return trimmed;
+			return (selector(matches.slice(1)) || '');
 		} else {
 			return undefined;
 		}
@@ -215,7 +216,7 @@ function p_tail(s, acc) {
 }
 
 // **Parse out any matching special symbol in a string `s`**
-function parseSpecial(s) {
+function parseSpecial_old(s) {
 
 	function parseSymbol(s, regex, selector) {
 		// Default to selecting the last regex group in the match
@@ -240,6 +241,8 @@ function parseSpecial(s) {
 		return !_.isUndefined(v.result);
 	});
 }
+
+var parseSpecial = p_tail;
 
 
 // Built-in Predicates
@@ -643,7 +646,7 @@ function objectParser(o) {
 		// Only look at the specials that match `specialName`, and then get the schema object
 		// values (which hold predicates) for each key that has the special.
 		var preds = specialsInObject.filter(function(v){ return v.name === specialName }).map(function(v){ return obj[v.input] });
-		
+
 		// All the rest of the keys that don't use any special operator
 		// by checking to see if the key value matches an input for a found
 		// parsed special
@@ -660,7 +663,7 @@ function objectParser(o) {
 			// and combine them with the ones we found.
 			// Start with an empty array to give a default if config.preds[SpecialName]
 			// is undefined (i.e. not registered)
-			config.preds[specialName] = [].concat(config.preds[specialName]).concat(preds)
+			config.preds[specialName] = [].concat(config.preds[specialName] || []).concat(preds);
 		}
 
 		return {obj: obj, keys: remainingKeys, specialsInObject: specialsInObject, preds: config.preds};
@@ -683,6 +686,7 @@ function objectParser(o) {
 
 	// **The evaluator for the * special**
 	function test_star(obj, remaining_keys, affected_keys, preds) {
+
 			function incrementIfExists(o, k, inc) {
 				if(o[k]) {
 					o[k] = o[k] + inc;
@@ -854,6 +858,7 @@ function parser(v) {
 			switch (specials[0].name) {
 				// match `*` up to isAnything
 				case 'STAR':
+					console.log("STAR");
 					p = function(x){ return isAnything; };
 					break;
 				// match up `$...$` to the sibling parser
@@ -862,7 +867,7 @@ function parser(v) {
 					break;
 				// otherwise use the default parseSpecial parser
 				default:
-					p = parseSpecial;
+					p = function(x) { return parseSpecial; }
 			}
 		};
 	};
@@ -871,11 +876,11 @@ function parser(v) {
 	return p(v);
 }
 
-// register the components to export
-exports['parser'] = parser;
-exports['o'] = o;
-exports['Failure'] = Failure;
+// // register the components to export
+// exports['parser'] = parser;
+// exports['o'] = o;
+// exports['Failure'] = Failure;
 
-return exports;
+// return exports;
 
-};
+// };
