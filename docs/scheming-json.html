@@ -27,11 +27,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              
+              <p>‘use strict’;
+function schemingJson(exports){</p>
+<h2 id="scheming-json">scheming json</h2>
+
             </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-meta">'use strict'</span>;
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">schemingJson</span>(<span class="hljs-params">exports</span>)</span>{</pre></div></div>
             
         </li>
         
@@ -42,8 +42,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <h2 id="scheming-json">scheming json</h2>
-
+              
             </div>
             
         </li>
@@ -55,7 +54,8 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              
+              <p>😏 A lightweight, functional library for describing and validating JSON and JavaScript data</p>
+
             </div>
             
         </li>
@@ -67,7 +67,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>😏 A lightweight, functional library for describing and validating JSON and JavaScript data</p>
+              <h2 id="general-docs">General Docs</h2>
 
             </div>
             
@@ -80,8 +80,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <h2 id="general-docs">General Docs</h2>
-
+              
             </div>
             
         </li>
@@ -93,7 +92,8 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              
+              <h2 id="describing-json">Describing JSON</h2>
+
             </div>
             
         </li>
@@ -105,8 +105,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <h2 id="describing-json">Describing JSON</h2>
-
+              
             </div>
             
         </li>
@@ -117,18 +116,6 @@
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
-              </div>
-              
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-9">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>Consider the JSON structure </p>
 <pre><code class="lang-javascript"><span class="hljs-keyword">var</span> data = {articles: 
@@ -180,13 +167,27 @@
         </li>
         
         
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <h2 id="special-values-operators">Special values/operators</h2>
+
+            </div>
+            
+        </li>
+        
+        
         <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
-              <h2 id="special-values-operators">Special values/operators</h2>
+              <h2 id="-">**</h2>
+<p><code>**</code> says that we should apply the predicate to all other fields in an object that we haven’t already specified.</p>
 
             </div>
             
@@ -198,20 +199,6 @@
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-11">&#182;</a>
-              </div>
-              <h2 id="-">**</h2>
-<p><code>**</code> says that we should apply the predicate to all other fields in an object that we haven’t already specified.</p>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-12">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p>For example, this would also match our article example</p>
 <pre><code class="lang-javascript"><span class="hljs-keyword">var</span> singleArticleAlt = {
@@ -227,11 +214,11 @@
         </li>
         
         
-        <li id="section-13">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p><em>
 -
@@ -245,15 +232,29 @@
         </li>
         
         
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p><code>*</code> can also appear in the key selector</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> nameAndFunc = {name: <span class="hljs-string">'*'</span>, <span class="hljs-string">'*'</span>: isFunction};
+</code></pre>
+
+            </div>
+            
+        </li>
+        
+        
         <li id="section-14">
             <div class="annotation">
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
-              <p><code>*</code> can also appear in the key selector</p>
-<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> nameAndFunc = {name: <span class="hljs-string">'*'</span>, <span class="hljs-string">'*'</span>: isFunction};
-</code></pre>
+              <p><code>*</code> can be used for multiple key value wildcards. However, since JavaScript object keys must be unique, it must be
+written like <code>*something*</code> (any arbitrary name between two *s).</p>
 
             </div>
             
@@ -266,8 +267,9 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
-              <p><code>*</code> can be used for multiple key value wildcards. However, since JavaScript object keys must be unique, it must be
-written like <code>*something*</code> (any arbitrary name between two *s).</p>
+              <pre><code class="lang-javascript"><span class="hljs-keyword">var</span> twoStrings = {<span class="hljs-string">'*a*'</span>: isString, <span class="hljs-string">'*b*'</span>: isString};
+</code></pre>
+<p>This operator is super buggy right now :-(</p>
 
             </div>
             
@@ -280,9 +282,7 @@ written like <code>*something*</code> (any arbitrary name between two *s).</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
-              <pre><code class="lang-javascript"><span class="hljs-keyword">var</span> twoStrings = {<span class="hljs-string">'*a*'</span>: isString, <span class="hljs-string">'*b*'</span>: isString};
-</code></pre>
-<p>This operator is super buggy right now :-(</p>
+              <h2 id="-and-">{} and []</h2>
 
             </div>
             
@@ -295,8 +295,7 @@ written like <code>*something*</code> (any arbitrary name between two *s).</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
-              <h2 id="-and-">{} and []</h2>
-
+              
             </div>
             
         </li>
@@ -308,7 +307,11 @@ written like <code>*something*</code> (any arbitrary name between two *s).</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
-              
+              <p>The empty object and empty array predicates will match either an object or an array, but not look at its contents.
+If we didn’t care about the contents of our article tags we could have written</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> tagsPresentButUnaccountedFor = {title: isString, author: isString, published: isDateString, tags []};
+</code></pre>
+
             </div>
             
         </li>
@@ -320,9 +323,8 @@ written like <code>*something*</code> (any arbitrary name between two *s).</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
-              <p>The empty object and empty array predicates will match either an object or an array, but not look at its contents.
-If we didn’t care about the contents of our article tags we could have written</p>
-<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> tagsPresentButUnaccountedFor = {title: isString, author: isString, published: isDateString, tags []};
+              <p>If all we wanted to do was make sure that each article in our article array was an object</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> articles_array = {articles: [{}]};
 </code></pre>
 
             </div>
@@ -336,9 +338,7 @@ If we didn’t care about the contents of our article tags we could have written
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
-              <p>If all we wanted to do was make sure that each article in our article array was an object</p>
-<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> articles_array = {articles: [{}]};
-</code></pre>
+              <p>Both the empty array and empty object notation are shorthands for <code>isArray</code> and <code>isObject</code> predicates.</p>
 
             </div>
             
@@ -351,7 +351,7 @@ If we didn’t care about the contents of our article tags we could have written
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-21">&#182;</a>
               </div>
-              <p>Both the empty array and empty object notation are shorthands for <code>isArray</code> and <code>isObject</code> predicates.</p>
+              <h2 id="-">$…$</h2>
 
             </div>
             
@@ -364,7 +364,7 @@ If we didn’t care about the contents of our article tags we could have written
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-22">&#182;</a>
               </div>
-              <h2 id="-">$…$</h2>
+              <p>The dollar sign operators allow lookup of sibling key values within the same object.</p>
 
             </div>
             
@@ -377,7 +377,8 @@ If we didn’t care about the contents of our article tags we could have written
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-23">&#182;</a>
               </div>
-              <p>The dollar sign operators allow lookup of sibling key values within the same object.</p>
+              <pre><code class="lang-javascript">  {title: isString, author: myCoolLookupFunction(<span class="hljs-string">'$title$'</span>)}
+</code></pre>
 
             </div>
             
@@ -390,8 +391,7 @@ If we didn’t care about the contents of our article tags we could have written
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
-              <pre><code class="lang-javascript">  {title: isString, author: myCoolLookupFunction(<span class="hljs-string">'$title$'</span>)}
-</code></pre>
+              <p>Coming soon: how to write functions that can accept <code>$...$</code> arguments.</p>
 
             </div>
             
@@ -404,7 +404,7 @@ If we didn’t care about the contents of our article tags we could have written
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
-              <p>Coming soon: how to write functions that can accept <code>$...$</code> arguments.</p>
+              <h2 id="composing-predicate-functions">Composing predicate functions</h2>
 
             </div>
             
@@ -417,8 +417,7 @@ If we didn’t care about the contents of our article tags we could have written
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-26">&#182;</a>
               </div>
-              <h2 id="composing-predicate-functions">Composing predicate functions</h2>
-
+              
             </div>
             
         </li>
@@ -430,7 +429,9 @@ If we didn’t care about the contents of our article tags we could have written
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-27">&#182;</a>
               </div>
-              
+              <p>The <code>composePredsWith</code> function takes an array of 1-argument predicates and pipes them together using <code>glue</code>.
+By default, predicates are glued together with <code>&amp;&amp;</code>.</p>
+
             </div>
             
         </li>
@@ -441,20 +442,6 @@ If we didn’t care about the contents of our article tags we could have written
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-28">&#182;</a>
-              </div>
-              <p>The <code>composePredsWith</code> function takes an array of 1-argument predicates and pipes them together using <code>glue</code>.
-By default, predicates are glued together with <code>&amp;&amp;</code>.</p>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-29">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-29">&#182;</a>
               </div>
               <p>As an example, let’s make a predicate that only allows non-empty arrays</p>
 <pre><code class="lang-javascript"><span class="hljs-keyword">var</span> isNonEmptyArray = compose1PredsWith([<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v</span>)</span>{<span class="hljs-keyword">return</span> !isEmpty(v)}, isArray], and);
@@ -468,13 +455,26 @@ By default, predicates are glued together with <code>&amp;&amp;</code>.</p>
         </li>
         
         
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>To hide the explicit function application, scheming json also provides a composer called <code>o</code>.</p>
+
+            </div>
+            
+        </li>
+        
+        
         <li id="section-30">
             <div class="annotation">
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-30">&#182;</a>
               </div>
-              <p>To hide the explicit function application, scheming json also provides a composer called <code>o</code>.</p>
+              <h2 id="the-composer">The Composer</h2>
 
             </div>
             
@@ -486,19 +486,6 @@ By default, predicates are glued together with <code>&amp;&amp;</code>.</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-31">&#182;</a>
-              </div>
-              <h2 id="the-composer">The Composer</h2>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-32">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-32">&#182;</a>
               </div>
               <p>The composer is an easier way of using <code>composePredicatesWith</code>.
 Initiall, the first predicate is wrapped with <code>o</code>, (e.g. <code>o(myPred)</code>),
@@ -519,14 +506,26 @@ or use <code>()</code> to get a normal function that can be used on a value</p>
         </li>
         
         
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <h2 id="-the-rest-of-the-code-">(The rest of the code)</h2>
+
+            </div>
+            
+        </li>
+        
+        
         <li id="section-33">
             <div class="annotation">
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-33">&#182;</a>
               </div>
-              <h2 id="-the-rest-of-the-code-">(The rest of the code)</h2>
-
+              
             </div>
             
         </li>
@@ -538,7 +537,8 @@ or use <code>()</code> to get a normal function that can be used on a value</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-34">&#182;</a>
               </div>
-              
+              <h2 id="definition-of-specials">Definition of Specials</h2>
+
             </div>
             
         </li>
@@ -550,9 +550,11 @@ or use <code>()</code> to get a normal function that can be used on a value</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-35">&#182;</a>
               </div>
-              <h2 id="definition-of-specials">Definition of Specials</h2>
+              <p><strong>Definitions for parsing special operators from strings</strong></p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> SPECIALS = [</pre></div></div>
             
         </li>
         
@@ -563,11 +565,12 @@ or use <code>()</code> to get a normal function that can be used on a value</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-36">&#182;</a>
               </div>
-              <p><strong>Definitions for parsing special operators from strings</strong></p>
+              <p>The <code>*</code> operator, matches just <code>&#39;*&#39;</code>, or <code>&#39;*...*&#39;</code> (two <code>*</code> with anything inbetween)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> SPECIALS = [</pre></div></div>
+            <div class="content"><div class='highlight'><pre>	{name: <span class="hljs-string">'STAR'</span>,		rule: <span class="hljs-regexp">/(?:^\*$)/</span>, 			type: [<span class="hljs-string">'KEY'</span>, <span class="hljs-string">'VALUE'</span>]},
+	{name: <span class="hljs-string">'STAR'</span>,		rule: <span class="hljs-regexp">/(?:^\*([^*]+)\*$)/</span>,	type: [<span class="hljs-string">'KEY'</span>, <span class="hljs-string">'VALUE'</span>]},</pre></div></div>
             
         </li>
         
@@ -578,11 +581,11 @@ or use <code>()</code> to get a normal function that can be used on a value</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-37">&#182;</a>
               </div>
-              <p>The <code>*</code> operator, matches just <code>&#39;*&#39;</code>, or <code>&#39;*...*&#39;</code> (two <code>*</code> with anything inbetween)</p>
+              <p>The <code>**</code> operator, matches just <code>&#39;**&#39;</code></p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>	{name: <span class="hljs-string">'STAR'</span>,		rule: <span class="hljs-regexp">/(?:^\*$)|(?:^\*[^*]+\*$)/</span>},</pre></div></div>
+            <div class="content"><div class='highlight'><pre>	{name: <span class="hljs-string">'STAR_STAR'</span>,	rule: <span class="hljs-regexp">/^\*{2}$/</span>,			type: [<span class="hljs-string">'KEY'</span>]},</pre></div></div>
             
         </li>
         
@@ -593,11 +596,44 @@ or use <code>()</code> to get a normal function that can be used on a value</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-38">&#182;</a>
               </div>
-              <p>The <code>**</code> operator, matches just <code>&#39;**&#39;</code></p>
+              <p>The <code>$...$</code> sibling value operator, matches anyting between two <code>$</code>.
+The regex captures the content between the dollar signs as a group</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>	{name: <span class="hljs-string">'STAR_STAR'</span>,	rule: <span class="hljs-regexp">/^\*{2}$/</span>},</pre></div></div>
+            <div class="content"><div class='highlight'><pre>	{name: <span class="hljs-string">'SIBLING'</span>,	rule: <span class="hljs-regexp">/^\$(.+)\$$/</span>,			type: [<span class="hljs-string">'KEY'</span>]},
+	{name: <span class="hljs-string">'OPTIONAL'</span>, 	rule: <span class="hljs-regexp">/^\((.+)\)$/</span>,			type: [<span class="hljs-string">'EXISTENTIAL'</span>]}
+];
+
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">p_tail</span>(<span class="hljs-params">s, acc</span>) </span>{
+	<span class="hljs-keyword">var</span> selector = _.last;
+
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parse1</span>(<span class="hljs-params">s, rule</span>) </span>{
+		<span class="hljs-keyword">if</span>(!rule || !s) { <span class="hljs-keyword">return</span> <span class="hljs-literal">undefined</span>; }
+
+		<span class="hljs-keyword">var</span> matches = s.match(rule.rule);
+		<span class="hljs-keyword">var</span> anyMatched = !_.isNull(matches);
+
+		<span class="hljs-keyword">if</span>(anyMatched) {
+			<span class="hljs-keyword">return</span> (selector(matches.slice(<span class="hljs-number">1</span>)) || <span class="hljs-string">''</span>);
+		} <span class="hljs-keyword">else</span> {
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">undefined</span>;
+		}
+	}
+
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">selectRule</span>(<span class="hljs-params">s</span>) </span>{
+		<span class="hljs-keyword">return</span> SPECIALS.filter(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v</span>)</span>{ <span class="hljs-keyword">return</span> !_.isUndefined(parse1(s,v))})[<span class="hljs-number">0</span>];
+	}
+
+	acc = acc || [];
+
+	<span class="hljs-keyword">var</span> rule = selectRule(s);
+	<span class="hljs-keyword">var</span> result = parse1(s, rule);
+	
+	<span class="hljs-keyword">if</span> (result === <span class="hljs-literal">undefined</span>) <span class="hljs-keyword">return</span> acc;
+	<span class="hljs-keyword">return</span> p_tail(result, acc.concat({input: s, name: rule.name, result: result}));
+}</pre></div></div>
             
         </li>
         
@@ -608,13 +644,13 @@ or use <code>()</code> to get a normal function that can be used on a value</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-39">&#182;</a>
               </div>
-              <p>The <code>$...$</code> sibling value operator, matches anyting between two <code>$</code>.
-The regex captures the content between the dollar signs as a group</p>
+              <p><strong>Parse out any matching special symbol in a string <code>s</code></strong></p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>	{name: <span class="hljs-string">'SIBLING'</span>,	rule: <span class="hljs-regexp">/^\$(.+)\$$/</span>}
-];</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseSpecial_old</span>(<span class="hljs-params">s</span>) </span>{
+
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseSymbol</span>(<span class="hljs-params">s, regex, selector</span>) </span>{</pre></div></div>
             
         </li>
         
@@ -624,23 +660,6 @@ The regex captures the content between the dollar signs as a group</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-40">&#182;</a>
-              </div>
-              <p><strong>Parse out any matching special symbol in a string <code>s</code></strong></p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseSpecial</span>(<span class="hljs-params">s</span>) </span>{
-
-	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseSymbol</span>(<span class="hljs-params">s, regex, selector</span>) </span>{</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-41">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-41">&#182;</a>
               </div>
               <p>Default to selecting the last regex group in the match
 (The matched string if there are no groups, otherwise the last defined group)
@@ -653,11 +672,11 @@ This can be overridden using a custom <code>selector</code> funcion.</p>
         </li>
         
         
-        <li id="section-42">
+        <li id="section-41">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-42">&#182;</a>
+                <a class="pilcrow" href="#section-41">&#182;</a>
               </div>
               <p>return any regex matches (<code>String.match</code> returns <code>null</code> (not <code>undefined</code>) if it doesn’t find any matches)</p>
 
@@ -672,11 +691,11 @@ This can be overridden using a custom <code>selector</code> funcion.</p>
         </li>
         
         
-        <li id="section-43">
+        <li id="section-42">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-43">&#182;</a>
+                <a class="pilcrow" href="#section-42">&#182;</a>
               </div>
               <p>Check to see if <code>s</code> matches against all definitions in <code>SPECIALS</code>
 and return an array of matching objects</p>
@@ -688,11 +707,11 @@ and return an array of matching objects</p>
         </li>
         
         
-        <li id="section-44">
+        <li id="section-43">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-44">&#182;</a>
+                <a class="pilcrow" href="#section-43">&#182;</a>
               </div>
               <p>object with the special name, the result of the parse, and the original input string <code>s</code></p>
 
@@ -704,11 +723,11 @@ and return an array of matching objects</p>
         </li>
         
         
-        <li id="section-45">
+        <li id="section-44">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-45">&#182;</a>
+                <a class="pilcrow" href="#section-44">&#182;</a>
               </div>
               <p>filter by any special found (<code>parseSymbol</code> returns <code>undefined</code> if nothing was found)</p>
 
@@ -716,7 +735,22 @@ and return an array of matching objects</p>
             
             <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">return</span> !_.isUndefined(v.result);
 	});
-}</pre></div></div>
+}
+
+<span class="hljs-keyword">var</span> parseSpecial = p_tail;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <h2 id="built-in-predicates">Built-in Predicates</h2>
+
+            </div>
             
         </li>
         
@@ -726,19 +760,6 @@ and return an array of matching objects</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-46">&#182;</a>
-              </div>
-              <h2 id="built-in-predicates">Built-in Predicates</h2>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-47">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-47">&#182;</a>
               </div>
               
             </div>
@@ -751,11 +772,11 @@ and return an array of matching objects</p>
         </li>
         
         
-        <li id="section-48">
+        <li id="section-47">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-48">&#182;</a>
+                <a class="pilcrow" href="#section-47">&#182;</a>
               </div>
               <p>Note that this is <em>way</em> different from <code>_</code>‘s built-in <code>_.isObject</code> function
 it returns true if it’s an object that’s not an array or a function</p>
@@ -770,11 +791,11 @@ it returns true if it’s an object that’s not an array or a function</p>
         </li>
         
         
-        <li id="section-49">
+        <li id="section-48">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-49">&#182;</a>
+                <a class="pilcrow" href="#section-48">&#182;</a>
               </div>
               <p>nb _.isEmpty returns <code>true</code> for primatives like strings and numbers</p>
 
@@ -786,11 +807,11 @@ it returns true if it’s an object that’s not an array or a function</p>
         </li>
         
         
-        <li id="section-50">
+        <li id="section-49">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-50">&#182;</a>
+                <a class="pilcrow" href="#section-49">&#182;</a>
               </div>
               <p>used for the <code>*</code> operator</p>
 
@@ -801,11 +822,11 @@ it returns true if it’s an object that’s not an array or a function</p>
         </li>
         
         
-        <li id="section-51">
+        <li id="section-50">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-51">&#182;</a>
+                <a class="pilcrow" href="#section-50">&#182;</a>
               </div>
               <p>see if array a is a subset or b
 returns true for improper subsets as well</p>
@@ -820,11 +841,11 @@ returns true for improper subsets as well</p>
         </li>
         
         
-        <li id="section-52">
+        <li id="section-51">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-52">&#182;</a>
+                <a class="pilcrow" href="#section-51">&#182;</a>
               </div>
               <p>Logical funcs, to be used with JavaScript’s built-in operators can’t be directly passed</p>
 
@@ -840,11 +861,11 @@ returns true for improper subsets as well</p>
         </li>
         
         
-        <li id="section-53">
+        <li id="section-52">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-53">&#182;</a>
+                <a class="pilcrow" href="#section-52">&#182;</a>
               </div>
               <p>for operating on thunked values (see <code>composePredicatesWithWrapped</code> below)</p>
 
@@ -856,11 +877,11 @@ returns true for improper subsets as well</p>
         </li>
         
         
-        <li id="section-54">
+        <li id="section-53">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-54">&#182;</a>
+                <a class="pilcrow" href="#section-53">&#182;</a>
               </div>
               <p><strong>Test for a stop value</strong></p>
 <p>JSON only has two compound data types, Objects and Arrays.
@@ -876,11 +897,11 @@ pieces with parser functions</p>
         </li>
         
         
-        <li id="section-55">
+        <li id="section-54">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-55">&#182;</a>
+                <a class="pilcrow" href="#section-54">&#182;</a>
               </div>
               <p>since <code>typeof</code> a function is <code>&#39;function&#39;</code>, this will only return true
 for the kind of Objects we’re interested in</p>
@@ -892,11 +913,11 @@ for the kind of Objects we’re interested in</p>
         </li>
         
         
-        <li id="section-56">
+        <li id="section-55">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-56">&#182;</a>
+                <a class="pilcrow" href="#section-55">&#182;</a>
               </div>
               <p>now make sure that our object isn’t an Array, and isn’t an empty array
 since we want to treat empty objects and empty arrays as shorthands for
@@ -910,14 +931,26 @@ since we want to treat empty objects and empty arrays as shorthands for
         </li>
         
         
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <h2 id="utility-functions">Utility Functions</h2>
+
+            </div>
+            
+        </li>
+        
+        
         <li id="section-57">
             <div class="annotation">
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-57">&#182;</a>
               </div>
-              <h2 id="utility-functions">Utility Functions</h2>
-
+              
             </div>
             
         </li>
@@ -929,8 +962,11 @@ since we want to treat empty objects and empty arrays as shorthands for
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-58">&#182;</a>
               </div>
-              
+              <p><strong>Compose an aray of two-argument predicates together using the chaining function <code>glue</code></strong></p>
+
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">composePredicatesWith</span>(<span class="hljs-params">preds, glue</span>) </span>{</pre></div></div>
             
         </li>
         
@@ -941,11 +977,11 @@ since we want to treat empty objects and empty arrays as shorthands for
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-59">&#182;</a>
               </div>
-              <p><strong>Compose an aray of two-argument predicates together using the chaining function <code>glue</code></strong></p>
+              <p>if no chaining function is used, default to <code>and</code></p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">composePredicatesWith</span>(<span class="hljs-params">preds, glue</span>) </span>{</pre></div></div>
+            <div class="content"><div class='highlight'><pre>	glue = glue || and;</pre></div></div>
             
         </li>
         
@@ -956,21 +992,6 @@ since we want to treat empty objects and empty arrays as shorthands for
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-60">&#182;</a>
               </div>
-              <p>if no chaining function is used, default to <code>and</code></p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	glue = glue || and;</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-61">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-61">&#182;</a>
-              </div>
               <p>need at least two arguments for and, or, glue etc</p>
 
             </div>
@@ -980,11 +1001,11 @@ since we want to treat empty objects and empty arrays as shorthands for
         </li>
         
         
-        <li id="section-62">
+        <li id="section-61">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-62">&#182;</a>
+                <a class="pilcrow" href="#section-61">&#182;</a>
               </div>
               <p>just return a parser for the first item of <code>preds</code></p>
 
@@ -996,11 +1017,11 @@ since we want to treat empty objects and empty arrays as shorthands for
         </li>
         
         
-        <li id="section-63">
+        <li id="section-62">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-63">&#182;</a>
+                <a class="pilcrow" href="#section-62">&#182;</a>
               </div>
               <p>otherwise return a function that will compose parsers for each value in <code>preds</code></p>
 
@@ -1017,11 +1038,11 @@ since we want to treat empty objects and empty arrays as shorthands for
         </li>
         
         
-        <li id="section-64">
+        <li id="section-63">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-64">&#182;</a>
+                <a class="pilcrow" href="#section-63">&#182;</a>
               </div>
               <p><strong>Compose an aray of two-argument predicates together using the chaining function <code>glue</code>, 
 wrapping the values in thunks</strong></p>
@@ -1041,11 +1062,11 @@ don’t continue evaluating the chain)</p>
         </li>
         
         
-        <li id="section-65">
+        <li id="section-64">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-65">&#182;</a>
+                <a class="pilcrow" href="#section-64">&#182;</a>
               </div>
               <p>need at least two arguments for and, or, glue etc</p>
 
@@ -1061,11 +1082,11 @@ don’t continue evaluating the chain)</p>
         </li>
         
         
-        <li id="section-66">
+        <li id="section-65">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-66">&#182;</a>
+                <a class="pilcrow" href="#section-65">&#182;</a>
               </div>
               <p>wrapping the values allows the boolean short-circuiting
 to keep undefined values from being evaluated</p>
@@ -1083,11 +1104,11 @@ to keep undefined values from being evaluated</p>
         </li>
         
         
-        <li id="section-67">
+        <li id="section-66">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-67">&#182;</a>
+                <a class="pilcrow" href="#section-66">&#182;</a>
               </div>
               <h2 id="the-composer">The Composer</h2>
 
@@ -1096,11 +1117,11 @@ to keep undefined values from being evaluated</p>
         </li>
         
         
-        <li id="section-68">
+        <li id="section-67">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-68">&#182;</a>
+                <a class="pilcrow" href="#section-67">&#182;</a>
               </div>
               <p>The composer is an easier way of using <code>composePredicatesWith</code>.
 Initiall, the first predicate is wrapped with <code>o</code>, (e.g. <code>o(myPred)</code>),
@@ -1123,11 +1144,11 @@ or use <code>()</code> to get a normal function that can be used on a value</p>
         </li>
         
         
-        <li id="section-69">
+        <li id="section-68">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-69">&#182;</a>
+                <a class="pilcrow" href="#section-68">&#182;</a>
               </div>
               <p>array of functions that will eventually be chained together</p>
 
@@ -1138,11 +1159,11 @@ or use <code>()</code> to get a normal function that can be used on a value</p>
         </li>
         
         
-        <li id="section-70">
+        <li id="section-69">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-70">&#182;</a>
+                <a class="pilcrow" href="#section-69">&#182;</a>
               </div>
               <p>used to make sure that there’s at least one function… can’t use <code>o()</code> directly!</p>
 
@@ -1153,11 +1174,11 @@ or use <code>()</code> to get a normal function that can be used on a value</p>
         </li>
         
         
-        <li id="section-71">
+        <li id="section-70">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-71">&#182;</a>
+                <a class="pilcrow" href="#section-70">&#182;</a>
               </div>
               <p><strong>Composer utility functions</strong></p>
 
@@ -1166,11 +1187,11 @@ or use <code>()</code> to get a normal function that can be used on a value</p>
         </li>
         
         
-        <li id="section-72">
+        <li id="section-71">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-72">&#182;</a>
+                <a class="pilcrow" href="#section-71">&#182;</a>
               </div>
               <p><strong>expand</strong> If the function we’re trying to chain is also a composer, convert the chain
 to a function by calling it (allows for nested chains/composition of chains)</p>
@@ -1182,11 +1203,11 @@ to a function by calling it (allows for nested chains/composition of chains)</p>
         </li>
         
         
-        <li id="section-73">
+        <li id="section-72">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-73">&#182;</a>
+                <a class="pilcrow" href="#section-72">&#182;</a>
               </div>
               <p>check for some meta-data on the function to see if it’s a normal function
 or a composer chain</p>
@@ -1200,11 +1221,11 @@ or a composer chain</p>
         </li>
         
         
-        <li id="section-74">
+        <li id="section-73">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-74">&#182;</a>
+                <a class="pilcrow" href="#section-73">&#182;</a>
               </div>
               <p><strong>applyState</strong> Transform any two argument function into a new function that applies the threaded state
 as the first argument, and an input value to the second argument. </p>
@@ -1222,11 +1243,11 @@ as the first argument, and an input value to the second argument. </p>
         </li>
         
         
-        <li id="section-75">
+        <li id="section-74">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-75">&#182;</a>
+                <a class="pilcrow" href="#section-74">&#182;</a>
               </div>
               <p><strong>statefulAnd</strong> Short-circuiting <code>and</code>. Takes a function <code>f</code> as a parameter and returns a new function
 that acceps the threaded <code>state</code> and a value <code>x</code>. It returns the result of <code>and</code>ing the
@@ -1243,11 +1264,11 @@ threaded state with <code>f(x)</code>.</p>
         </li>
         
         
-        <li id="section-76">
+        <li id="section-75">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-76">&#182;</a>
+                <a class="pilcrow" href="#section-75">&#182;</a>
               </div>
               <p><strong>statefulOr</strong> Short-circuiting <code>or</code>. Takes a function <code>f</code> as a parameter and returns a new function
 that acceps the threaded <code>state</code> and a value <code>x</code>. It returns the result of <code>or</code>ing the
@@ -1264,11 +1285,11 @@ threaded state with <code>f(x)</code>.</p>
         </li>
         
         
-        <li id="section-77">
+        <li id="section-76">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-77">&#182;</a>
+                <a class="pilcrow" href="#section-76">&#182;</a>
               </div>
               <p><strong>statefulNand</strong> Short-circuiting <code>nand</code>. Takes a function <code>f</code> as a parameter and returns a new function
 that acceps the threaded <code>state</code> and a value <code>x</code>. It returns the result of <code>nand</code>ing the
@@ -1282,11 +1303,11 @@ threaded state with <code>f(x)</code>.</p>
         </li>
         
         
-        <li id="section-78">
+        <li id="section-77">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-78">&#182;</a>
+                <a class="pilcrow" href="#section-77">&#182;</a>
               </div>
               <p>this is equivalent to <code>!(state &amp;&amp; f(x))</code>, but is broken up to allow
 short circuiting</p>
@@ -1300,11 +1321,11 @@ short circuiting</p>
         </li>
         
         
-        <li id="section-79">
+        <li id="section-78">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-79">&#182;</a>
+                <a class="pilcrow" href="#section-78">&#182;</a>
               </div>
               <p><strong>statefulNor</strong> Short-circuiting <code>nor</code>. Takes a function <code>f</code> as a parameter and returns a new function
 that acceps the threaded <code>state</code> and a value <code>x</code>. It returns the result of <code>nor</code>ing the
@@ -1318,11 +1339,11 @@ threaded state with <code>f(x)</code>.</p>
         </li>
         
         
-        <li id="section-80">
+        <li id="section-79">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-80">&#182;</a>
+                <a class="pilcrow" href="#section-79">&#182;</a>
               </div>
               <p>this is equivalent to <code>!(state || f(x))</code>, but is broken up to allow
 short circuiting</p>
@@ -1336,11 +1357,11 @@ short circuiting</p>
         </li>
         
         
-        <li id="section-81">
+        <li id="section-80">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-81">&#182;</a>
+                <a class="pilcrow" href="#section-80">&#182;</a>
               </div>
               <p><strong>threadState</strong> Takes an array of functions that take a threaded state argument, and a value argument
 and returns a function that will thread a value <code>v</code> through all the composed chain of functions</p>
@@ -1358,11 +1379,11 @@ and returns a function that will thread a value <code>v</code> through all the c
         </li>
         
         
-        <li id="section-82">
+        <li id="section-81">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-82">&#182;</a>
+                <a class="pilcrow" href="#section-81">&#182;</a>
               </div>
               <p><strong>The main composer function/object</strong></p>
 
@@ -1371,11 +1392,11 @@ and returns a function that will thread a value <code>v</code> through all the c
         </li>
         
         
-        <li id="section-83">
+        <li id="section-82">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-83">&#182;</a>
+                <a class="pilcrow" href="#section-82">&#182;</a>
               </div>
               <p>This is a function, not an object literal so that we can call it
 as of es5 there’s no way to make something callable down the road.</p>
@@ -1387,11 +1408,11 @@ as of es5 there’s no way to make something callable down the road.</p>
         </li>
         
         
-        <li id="section-84">
+        <li id="section-83">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-84">&#182;</a>
+                <a class="pilcrow" href="#section-83">&#182;</a>
               </div>
               <p>check to see if it was an <code>()</code> function call</p>
 
@@ -1402,11 +1423,11 @@ as of es5 there’s no way to make something callable down the road.</p>
         </li>
         
         
-        <li id="section-85">
+        <li id="section-84">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-85">&#182;</a>
+                <a class="pilcrow" href="#section-84">&#182;</a>
               </div>
               <p>If everything has been properly set up, return the composed function
 from the array of <code>funcs</code></p>
@@ -1420,11 +1441,11 @@ from the array of <code>funcs</code></p>
         </li>
         
         
-        <li id="section-86">
+        <li id="section-85">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-86">&#182;</a>
+                <a class="pilcrow" href="#section-85">&#182;</a>
               </div>
               <p>Oops, we don’t have any functions to work with!
 Could return the identity function or something here,
@@ -1440,11 +1461,11 @@ part of the user…..</p>
         </li>
         
         
-        <li id="section-87">
+        <li id="section-86">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-87">&#182;</a>
+                <a class="pilcrow" href="#section-86">&#182;</a>
               </div>
               <p>The call had 1 or more arguments, so we’re applying the chain to a value</p>
 
@@ -1455,11 +1476,11 @@ part of the user…..</p>
         </li>
         
         
-        <li id="section-88">
+        <li id="section-87">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-88">&#182;</a>
+                <a class="pilcrow" href="#section-87">&#182;</a>
               </div>
               <p>Ff this is the first time we’ve recieved a value, this is the initial
 function wrapping (which will be bound to the <code>initial</code> variable named)
@@ -1472,11 +1493,11 @@ in the function definition of <code>function o(initial)</code></p>
         </li>
         
         
-        <li id="section-89">
+        <li id="section-88">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-89">&#182;</a>
+                <a class="pilcrow" href="#section-88">&#182;</a>
               </div>
               <p>Set our tracker to true</p>
 
@@ -1487,11 +1508,11 @@ in the function definition of <code>function o(initial)</code></p>
         </li>
         
         
-        <li id="section-90">
+        <li id="section-89">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-90">&#182;</a>
+                <a class="pilcrow" href="#section-89">&#182;</a>
               </div>
               <p>Return the <code>o</code> composer object</p>
 
@@ -1503,11 +1524,11 @@ in the function definition of <code>function o(initial)</code></p>
         </li>
         
         
-        <li id="section-91">
+        <li id="section-90">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-91">&#182;</a>
+                <a class="pilcrow" href="#section-90">&#182;</a>
               </div>
               <p>Create a function from the threaded functions and apply the arguments
 recieved to the composed function</p>
@@ -1522,11 +1543,11 @@ recieved to the composed function</p>
         </li>
         
         
-        <li id="section-92">
+        <li id="section-91">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-92">&#182;</a>
+                <a class="pilcrow" href="#section-91">&#182;</a>
               </div>
               <p>Set metadata on the composer function to mark it as a composer chain</p>
 
@@ -1537,11 +1558,11 @@ recieved to the composed function</p>
         </li>
         
         
-        <li id="section-93">
+        <li id="section-92">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-93">&#182;</a>
+                <a class="pilcrow" href="#section-92">&#182;</a>
               </div>
               <p>Register the <code>.and(...)</code> method</p>
 
@@ -1555,11 +1576,11 @@ recieved to the composed function</p>
         </li>
         
         
-        <li id="section-94">
+        <li id="section-93">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-94">&#182;</a>
+                <a class="pilcrow" href="#section-93">&#182;</a>
               </div>
               <p>Register the <code>.nand(...)</code> method</p>
 
@@ -1573,11 +1594,11 @@ recieved to the composed function</p>
         </li>
         
         
-        <li id="section-95">
+        <li id="section-94">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-95">&#182;</a>
+                <a class="pilcrow" href="#section-94">&#182;</a>
               </div>
               <p>Register the <code>.or(...)</code> method</p>
 
@@ -1591,11 +1612,11 @@ recieved to the composed function</p>
         </li>
         
         
-        <li id="section-96">
+        <li id="section-95">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-96">&#182;</a>
+                <a class="pilcrow" href="#section-95">&#182;</a>
               </div>
               <p>Register the <code>.nor(...)</code> method</p>
 
@@ -1609,11 +1630,11 @@ recieved to the composed function</p>
         </li>
         
         
-        <li id="section-97">
+        <li id="section-96">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-97">&#182;</a>
+                <a class="pilcrow" href="#section-96">&#182;</a>
               </div>
               <p>Return the composer</p>
 
@@ -1625,14 +1646,26 @@ recieved to the composed function</p>
         </li>
         
         
+        <li id="section-97">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-97">&#182;</a>
+              </div>
+              <h2 id="other-utilities-types">Other utilities/types</h2>
+
+            </div>
+            
+        </li>
+        
+        
         <li id="section-98">
             <div class="annotation">
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-98">&#182;</a>
               </div>
-              <h2 id="other-utilities-types">Other utilities/types</h2>
-
+              
             </div>
             
         </li>
@@ -1644,18 +1677,6 @@ recieved to the composed function</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-99">&#182;</a>
               </div>
-              
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-100">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-100">&#182;</a>
-              </div>
               <p><strong>thunk</strong> Represent a thunk, used for the $sibling$ paser
 could and probably should be refactored to use the composer/chain</p>
 
@@ -1666,11 +1687,11 @@ could and probably should be refactored to use the composer/chain</p>
         </li>
         
         
-        <li id="section-101">
+        <li id="section-100">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-101">&#182;</a>
+                <a class="pilcrow" href="#section-100">&#182;</a>
               </div>
               <p>return a function taking an array of arguments to appy to <code>f</code> when the thunk
 is executed, and a value for the <code>this</code> argument to be used for <code>f</code>. If no argument
@@ -1685,11 +1706,11 @@ is given, <code>undefined</code> is used.</p>
         </li>
         
         
-        <li id="section-102">
+        <li id="section-101">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-102">&#182;</a>
+                <a class="pilcrow" href="#section-101">&#182;</a>
               </div>
               <p>set metadata on the thunk function to identify it as a thunk</p>
 
@@ -1702,11 +1723,11 @@ is given, <code>undefined</code> is used.</p>
         </li>
         
         
-        <li id="section-103">
+        <li id="section-102">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-103">&#182;</a>
+                <a class="pilcrow" href="#section-102">&#182;</a>
               </div>
               <p><strong>Failure</strong> Optional type used for chaining objects to nuke the chain if one step fails.
 The <code>fakeFunctionNames</code> argument in the constructor is a list of method names
@@ -1725,11 +1746,11 @@ object for any method call)</p>
         </li>
         
         
-        <li id="section-104">
+        <li id="section-103">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-104">&#182;</a>
+                <a class="pilcrow" href="#section-103">&#182;</a>
               </div>
               <p>create Failure-returning functions for each of the fake method names</p>
 
@@ -1742,11 +1763,11 @@ object for any method call)</p>
         </li>
         
         
-        <li id="section-105">
+        <li id="section-104">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-105">&#182;</a>
+                <a class="pilcrow" href="#section-104">&#182;</a>
               </div>
               <p>Register the fake methods onto the failure object</p>
 
@@ -1760,11 +1781,11 @@ object for any method call)</p>
         </li>
         
         
-        <li id="section-106">
+        <li id="section-105">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-106">&#182;</a>
+                <a class="pilcrow" href="#section-105">&#182;</a>
               </div>
               <p><strong>parseSiblingVar</strong> Parse a ‘$Sibling$’ special. Takes a string value <code>v</code>, and a function <code>f</code> that dispatches
 on the value returned by the sibling parser</p>
@@ -1781,11 +1802,11 @@ on the value returned by the sibling parser</p>
         </li>
         
         
-        <li id="section-107">
+        <li id="section-106">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-107">&#182;</a>
+                <a class="pilcrow" href="#section-106">&#182;</a>
               </div>
               <p><strong>parseSiblingKey</strong> Takes a key name, and returns a function taking an object <code>d</code>, and a value <code>val</code>
 and check to see whether the value of <code>keyName</code> in the object is equal to <code>val</code>
@@ -1805,14 +1826,26 @@ Used in the <code>$sibling$</code> special parser</p>
         </li>
         
         
+        <li id="section-107">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-107">&#182;</a>
+              </div>
+              <h2 id="parsers">Parsers</h2>
+
+            </div>
+            
+        </li>
+        
+        
         <li id="section-108">
             <div class="annotation">
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-108">&#182;</a>
               </div>
-              <h2 id="parsers">Parsers</h2>
-
+              
             </div>
             
         </li>
@@ -1823,18 +1856,6 @@ Used in the <code>$sibling$</code> special parser</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-109">&#182;</a>
-              </div>
-              
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-110">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-110">&#182;</a>
               </div>
               <p><strong>valueParser</strong> Return a predicate for a value v
 Defaults to a parser that check to see if any input is equal to v</p>
@@ -1855,11 +1876,11 @@ Defaults to a parser that check to see if any input is equal to v</p>
         </li>
         
         
-        <li id="section-111">
+        <li id="section-110">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-111">&#182;</a>
+                <a class="pilcrow" href="#section-110">&#182;</a>
               </div>
               <p><strong>arrayParser</strong> Returns compound parser for each item inside of an array <code>a</code> (using <code>and</code>)</p>
 
@@ -1870,11 +1891,11 @@ Defaults to a parser that check to see if any input is equal to v</p>
         </li>
         
         
-        <li id="section-112">
+        <li id="section-111">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-112">&#182;</a>
+                <a class="pilcrow" href="#section-111">&#182;</a>
               </div>
               <p>get a parser for each value inside of <code>a</code></p>
 
@@ -1885,11 +1906,11 @@ Defaults to a parser that check to see if any input is equal to v</p>
         </li>
         
         
-        <li id="section-113">
+        <li id="section-112">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-113">&#182;</a>
+                <a class="pilcrow" href="#section-112">&#182;</a>
               </div>
               <p>ugh, this always returns true for an empty list. what is a sane default? 
 Compose all the parsers in <code>preds</code> into one big function that will
@@ -1907,11 +1928,11 @@ match all the criteria defined in <code>a</code></p>
         </li>
         
         
-        <li id="section-114">
+        <li id="section-113">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-114">&#182;</a>
+                <a class="pilcrow" href="#section-113">&#182;</a>
               </div>
               <p>wrap values to make sure if isArray fails, the rest of the computation short circuits
 otherwise the call to a.reduce generates an exception</p>
@@ -1924,17 +1945,176 @@ otherwise the call to a.reduce generates an exception</p>
         </li>
         
         
+        <li id="section-114">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-114">&#182;</a>
+              </div>
+              <p><strong>objectParser</strong> Returns a compound parser matching schema rules for each key and value of an object <code>o</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">objectParser</span>(<span class="hljs-params">obj</span>) </span>{
+	
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeTest</span>(<span class="hljs-params">type, predicate, df, cost, name</span>) </span>{
+		<span class="hljs-keyword">return</span> {type: type, predicate: predicate, df: df, cost: cost, name: name}
+	}
+
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testType</span>(<span class="hljs-params">type, tests, arr, successCount, totalCost</span>) </span>{
+		successCount = successCount || <span class="hljs-number">0</span>;
+
+		<span class="hljs-keyword">if</span>(tests.length === <span class="hljs-number">0</span> &amp;&amp; arr.length !== <span class="hljs-number">0</span>) {
+			<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Empty Test Array"</span>);
+		}
+
+
+		<span class="hljs-keyword">var</span> arrDf = arr.length;
+		<span class="hljs-keyword">var</span> filteredTests = tests
+			.filter(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">t</span>)</span>{<span class="hljs-keyword">return</span> t.type === type; })
+			.sort(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">a,b</span>) </span>{
+				<span class="hljs-keyword">if</span>(!a &amp;&amp; !b) { <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>; }
+				<span class="hljs-keyword">if</span>(!a) { <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>; }
+				<span class="hljs-keyword">if</span>(!b) { <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; }
+				<span class="hljs-keyword">if</span> (a.df &gt; b.df) <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+				<span class="hljs-keyword">if</span> (a.df === b.df) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+				<span class="hljs-keyword">if</span> (a.df &lt; b.df) <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;
+			});
+
+		<span class="hljs-keyword">if</span>(filteredTests.length === <span class="hljs-number">0</span> &amp;&amp; arr.length === <span class="hljs-number">0</span>) {
+			<span class="hljs-keyword">return</span> [];
+		}
+
+		<span class="hljs-keyword">var</span> testCost = filteredTests.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">acc, c</span>) </span>{ <span class="hljs-keyword">return</span> acc + c.cost; }, <span class="hljs-number">0</span>);
+		totalCost = totalCost || testCost;
+
+		<span class="hljs-keyword">if</span> (testCost &gt; arrDf) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Not enough DF available to perform test"</span>);
+
+		<span class="hljs-keyword">var</span> currentTest = filteredTests[<span class="hljs-number">0</span>];
+		<span class="hljs-keyword">var</span> remainingTests = filteredTests.slice(<span class="hljs-number">1</span>);
+
+		<span class="hljs-keyword">var</span> testResults = arr.map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v</span>)</span>{ 
+			<span class="hljs-keyword">var</span> keyTest = key(currentTest.predicate)(key(v));
+			<span class="hljs-keyword">var</span> valueTest = value(currentTest.predicate)(value(v));
+			<span class="hljs-keyword">return</span> keyTest &amp;&amp; valueTest;
+		});
+		
+		<span class="hljs-keyword">var</span> successes = successCount + testResults.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">a,c</span>) </span>{<span class="hljs-keyword">if</span>(c){ <span class="hljs-keyword">return</span> a+<span class="hljs-number">1</span>; } <span class="hljs-keyword">return</span> a;}, <span class="hljs-number">0</span>);
+
+		<span class="hljs-keyword">var</span> reducedArray = [];
+		<span class="hljs-keyword">if</span> (currentTest.df === <span class="hljs-literal">Infinity</span>) {
+			<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i&lt;testResults.length; i++){
+				<span class="hljs-keyword">if</span>(!testResults[i]) { reducedArray.push(arr[i]) };
+			}
+		} <span class="hljs-keyword">else</span> {
+			<span class="hljs-keyword">var</span> pushed = <span class="hljs-number">0</span>;
+			<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i&lt;testResults.length; i++){
+				<span class="hljs-keyword">if</span>(pushed &lt;= currentTest.df) {
+					<span class="hljs-keyword">if</span>(!testResults[i]) { reducedArray.push(arr[i]) };
+				} <span class="hljs-keyword">else</span> {
+					reducedArray.push(arr[i]);
+				}
+			}
+		}
+
+		<span class="hljs-keyword">if</span> (remainingTests.length === <span class="hljs-number">0</span>) {
+			<span class="hljs-keyword">if</span> (successes &lt; totalCost) {
+				<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Couldn't satisfy required predicate"</span>);
+			}
+			<span class="hljs-keyword">return</span> reducedArray;
+		}
+
+		<span class="hljs-keyword">return</span> testType(type, remainingTests, reducedArray, successes, totalCost);
+	}</pre></div></div>
+            
+        </li>
+        
+        
         <li id="section-115">
             <div class="annotation">
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-115">&#182;</a>
               </div>
-              <p><strong>objectParser</strong> Returns a compound parser matching schema rules for each key and value of an object <code>o</code></p>
+              <p>todo transition from key/value pair array to object -&gt; for now just use _.toPairs ?</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">objectParser</span>(<span class="hljs-params">o</span>) </span>{</pre></div></div>
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is</span>(<span class="hljs-params">v</span>) </span>{ <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x</span>) </span>{ <span class="hljs-keyword">return</span> x === v; }}
+
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">key</span>(<span class="hljs-params">pair</span>) </span>{ <span class="hljs-keyword">return</span> pair[<span class="hljs-number">0</span>]; }
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">value</span>(<span class="hljs-params">pair</span>) </span>{ <span class="hljs-keyword">return</span> pair[<span class="hljs-number">1</span>]; }
+
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makePair</span>(<span class="hljs-params">key, value</span>) </span>{
+		<span class="hljs-keyword">return</span> [key, value];
+	}
+
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makePredicatePair</span>(<span class="hljs-params">keyPredicate, valuePredicate</span>) </span>{ <span class="hljs-keyword">return</span> makePair(keyPredicate, valuePredicate); }
+
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">evalObject</span>(<span class="hljs-params">obj, tests</span>) </span>{
+		<span class="hljs-keyword">var</span> pairs = _.toPairs(obj);
+		
+		<span class="hljs-keyword">var</span> boundResults;
+		<span class="hljs-keyword">try</span> {
+			boundResults = testType(<span class="hljs-string">'BOUND'</span>, tests, pairs);
+		} <span class="hljs-keyword">catch</span>(e) {
+			<span class="hljs-built_in">console</span>.log(e);
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+		}
+
+		<span class="hljs-keyword">var</span> freeResults;
+		<span class="hljs-keyword">try</span> {
+			freeResults = testType(<span class="hljs-string">'FREE'</span>, tests, boundResults);
+		} <span class="hljs-keyword">catch</span>(e) {
+			<span class="hljs-built_in">console</span>.log(e);
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+		}
+
+		<span class="hljs-keyword">return</span> freeResults.length === <span class="hljs-number">0</span>; <span class="hljs-comment">// nothing left over !</span>
+	}
+
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseSchemaObject</span>(<span class="hljs-params">obj</span>) </span>{
+		<span class="hljs-keyword">var</span> keys = <span class="hljs-built_in">Object</span>.keys(obj);
+
+		<span class="hljs-keyword">var</span> tests = [];
+
+		keys.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">k</span>)</span>{
+			<span class="hljs-keyword">var</span> specials = parseSpecial(k);
+
+			<span class="hljs-keyword">if</span> (specials.length === <span class="hljs-number">0</span>) {
+				tests.push(makeTest(<span class="hljs-string">'BOUND'</span>, makePredicatePair(is(k), parser(obj[k])), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>));
+			}
+
+			<span class="hljs-keyword">var</span> optional = specials.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">acc,v</span>)</span>{ <span class="hljs-keyword">return</span> acc || v.name === <span class="hljs-string">'OPTIONAL'</span>}, <span class="hljs-literal">false</span>);
+			<span class="hljs-keyword">var</span> star = specials.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">acc,v</span>)</span>{ <span class="hljs-keyword">return</span> acc || v.name === <span class="hljs-string">'STAR'</span>}, <span class="hljs-literal">false</span>);
+			<span class="hljs-keyword">var</span> star_star = specials.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">acc,v</span>)</span>{ <span class="hljs-keyword">return</span> acc || v.name === <span class="hljs-string">'STAR_STAR'</span>}, <span class="hljs-literal">false</span>);
+
+			<span class="hljs-keyword">if</span> (star) {
+				<span class="hljs-keyword">var</span> cost = <span class="hljs-number">1</span>;
+				<span class="hljs-keyword">if</span>(optional) { cost = <span class="hljs-number">0</span>; }
+				tests.push(makeTest(<span class="hljs-string">'FREE'</span>, makePredicatePair(isAnything, parser(obj[k])), <span class="hljs-number">1</span>, cost));
+			}
+
+			<span class="hljs-keyword">if</span> (star_star) {
+				<span class="hljs-keyword">var</span> cost = <span class="hljs-number">1</span>;
+				<span class="hljs-keyword">if</span>(optional) {cost = <span class="hljs-number">0</span>; }
+				tests.push(makeTest(<span class="hljs-string">'FREE'</span>, makePredicatePair(isAnything, parser(obj[k])), <span class="hljs-literal">Infinity</span>, cost));
+			}
+
+			<span class="hljs-keyword">if</span>(optional &amp;&amp; !(star||star_star)) {
+				<span class="hljs-keyword">var</span> testVal = specials[<span class="hljs-number">0</span>].result;
+				tests.push(makeTest(<span class="hljs-string">'BOUND'</span>, makePredicatePair(is(testVal), parser(obj[k])), <span class="hljs-number">1</span>, <span class="hljs-number">0</span>));
+			}
+
+		});
+
+		<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">op</span>(<span class="hljs-params">o</span>) </span>{
+			<span class="hljs-keyword">return</span> evalObject(o, tests);
+		};
+	}
+
+	<span class="hljs-keyword">return</span> parseSchemaObject(obj);
+}</pre></div></div>
             
         </li>
         
@@ -1945,12 +2125,11 @@ otherwise the call to a.reduce generates an exception</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-116">&#182;</a>
               </div>
-              <p>For holding the specials we parse out from the object</p>
+              <p><strong>The combined parser generator</strong></p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> SPECIALS_USED;
-	<span class="hljs-keyword">var</span> SPECIALS_ENV;</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parser</span>(<span class="hljs-params">v</span>) </span>{</pre></div></div>
             
         </li>
         
@@ -1961,11 +2140,11 @@ otherwise the call to a.reduce generates an exception</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-117">&#182;</a>
               </div>
-              <p><strong>Returns true if we are parsing any specials</strong></p>
+              <p>default value parser fallback</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SPECIALS_PRESENT</span>(<span class="hljs-params"></span>) </span>{ <span class="hljs-keyword">return</span> _.keys(SPECIALS_ENV.preds).length &gt; <span class="hljs-number">0</span>; }</pre></div></div>
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> p = valueParser;</pre></div></div>
             
         </li>
         
@@ -1976,687 +2155,6 @@ otherwise the call to a.reduce generates an exception</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-118">&#182;</a>
               </div>
-              <p><strong>Filter out any keys in the object that we’re going to parsing in a special
-and remove them from the general pool of keys we’re going to consider.</strong></p>
-<p>Takes a <code>config</code> object with</p>
-<ul>
-<li>the object we’re parsing,</li>
-<li>The keys that we’re going to parse</li>
-<li>and an array of any specials found to be used in the object and want to test for 
-and remove keys from general consideration.</li>
-<li>and a special name <code>specialName</code></li>
-</ul>
-<p>Returns a specials object with same key names a <code>config</code>, but with keys that have 
-been filtered according to the rules of the special, and object contining all the
-necessary predicates to parse the special on the object.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">genericStar</span>(<span class="hljs-params">config<span class="hljs-comment">/*={obj, keys, specialsInObject}*/</span>, specialName</span>)</span>{
-		<span class="hljs-keyword">var</span> obj = config.obj;
-		<span class="hljs-keyword">var</span> keys = config.keys;
-		<span class="hljs-keyword">var</span> specialsInObject = config.specialsInObject;</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-119">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-119">&#182;</a>
-              </div>
-              <p>Only look at the specials that match <code>specialName</code>, and then get the schema object
-values (which hold predicates) for each key that has the special.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> preds = specialsInObject.filter(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v</span>)</span>{ <span class="hljs-keyword">return</span> v.name === specialName }).map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v</span>)</span>{ <span class="hljs-keyword">return</span> obj[v.input] });</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-120">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-120">&#182;</a>
-              </div>
-              <p>All the rest of the keys that don’t use any special operator
-by checking to see if the key value matches an input for a found
-parsed special</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> remainingKeys = keys.filter(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v</span>) </span>{ 
-			<span class="hljs-keyword">var</span> notInSpecials = specialsInObject.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">acc, parsedSpecial</span>)</span>{
-				<span class="hljs-keyword">return</span> acc &amp;&amp; (v !== parsedSpecial.input);
-			}, <span class="hljs-literal">true</span>);
-			<span class="hljs-keyword">return</span> notInSpecials;
-		});</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-121">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-121">&#182;</a>
-              </div>
-              <p>If there are any specials used in the object we’re considering</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (preds.length &gt; <span class="hljs-number">0</span>) {</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-122">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-122">&#182;</a>
-              </div>
-              <p>get any already registered preds for this special name
-and combine them with the ones we found.
-Start with an empty array to give a default if config.preds[SpecialName]
-is undefined (i.e. not registered)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>			config.preds[specialName] = [].concat(config.preds[specialName]).concat(preds)
-		}
-
-		<span class="hljs-keyword">return</span> {obj: obj, keys: remainingKeys, specialsInObject: specialsInObject, preds: config.preds};
-	}</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-123">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-123">&#182;</a>
-              </div>
-              <p><strong>Return a parser for a special called <code>SPECIAL_NAME</code> using the special evaluator <code>f</code></strong></p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test_special</span>(<span class="hljs-params">f, SPECIAL_NAME</span>)</span>{
-		<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>) </span>{</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-124">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-124">&#182;</a>
-              </div>
-              <p>Look up the preds we need for the special in the <code>SPECIALS_ENV</code></p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">var</span> preds = SPECIALS_ENV.preds[SPECIAL_NAME];</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-125">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-125">&#182;</a>
-              </div>
-              <p>Get the keys that don’t use specials</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">var</span> remaining_keys = SPECIALS_ENV.keys;</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-126">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-126">&#182;</a>
-              </div>
-              <p>Get the keys that do use specials</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">var</span> affected_keys = _.difference(_.keys(obj), remaining_keys);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-127">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-127">&#182;</a>
-              </div>
-              <p>Apply the evaluator <code>f</code> for our special and return the result</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">return</span> f(obj, remaining_keys, affected_keys, preds);
-		}
-	};</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-128">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-128">&#182;</a>
-              </div>
-              <p><strong>The evaluator for the * special</strong></p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test_star</span>(<span class="hljs-params">obj, remaining_keys, affected_keys, preds</span>) </span>{
-			<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">incrementIfExists</span>(<span class="hljs-params">o, k, inc</span>) </span>{
-				<span class="hljs-keyword">if</span>(o[k]) {
-					o[k] = o[k] + inc;
-				} <span class="hljs-keyword">else</span> {
-					o[k] = inc;
-				}
-				<span class="hljs-keyword">return</span> o;
-			}</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-129">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-129">&#182;</a>
-              </div>
-              <p>we need to count each distinct predicate function … there is no way to distinguish
-between two functions that <em>do</em> the same thing, so beware…….</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">var</span> pred_counts = preds.reduce( <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">acc, p</span>)</span>{ <span class="hljs-keyword">return</span> incrementIfExists(acc, p, <span class="hljs-number">1</span>); }, {});</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-130">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-130">&#182;</a>
-              </div>
-              <p>now, take all the keys leftover from the object that aren’t in ‘keys’
-apply all the star preds</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">var</span> pred_successes = preds.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">acc_outer, p</span>)</span>{
-				<span class="hljs-keyword">var</span> successes = affected_keys.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">acc,current</span>)</span>{
-					<span class="hljs-keyword">if</span>(parser(p)(obj[current])) {
-						<span class="hljs-keyword">return</span> acc +<span class="hljs-number">1</span>;
-					} <span class="hljs-keyword">else</span> {
-						<span class="hljs-keyword">return</span> acc;
-					}
-				}, <span class="hljs-number">0</span>);
-				incrementIfExists(acc_outer, p, successes);
-				<span class="hljs-keyword">return</span> acc_outer;
-			}, {});</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-131">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-131">&#182;</a>
-              </div>
-              <p>and count how many trues there are, and make sure the numbers match up!
-console.log(pred_counts, pred_successes);</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">return</span> _.isEqual(pred_counts, pred_successes);
-		};</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-132">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-132">&#182;</a>
-              </div>
-              <p><strong>evaluator for the </strong> special**</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test_star_star</span>(<span class="hljs-params">obj, remaining_keys, affected_keys, preds</span>) </span>{</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-133">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-133">&#182;</a>
-              </div>
-              <p>make sure that any of the preds used for the ** special
-are true all keys that are going to be evaulated using the special</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">return</span> affected_keys.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">a,k</span>)</span>{
-			<span class="hljs-keyword">var</span> predsMatchForK = preds.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">acc,p</span>)</span>{
-				<span class="hljs-keyword">return</span> (acc || parser(p)(obj[k]))
-			}, <span class="hljs-literal">false</span>);
-			
-			<span class="hljs-keyword">return</span> (a &amp;&amp; predsMatchForK);
-		}, <span class="hljs-literal">true</span>);
-	};</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-134">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-134">&#182;</a>
-              </div>
-              <p><strong>Evaluator for keys that don’t use specials</strong></p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test_regular_keys</span>(<span class="hljs-params">obj</span>) </span>{</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-135">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-135">&#182;</a>
-              </div>
-              <p>The keys we expected to find, based on the schema</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> expected_keys = SPECIALS_ENV.keys;</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-136">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-136">&#182;</a>
-              </div>
-              <p>Keys in the object that we found that weren’t described in the schema</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> unexpected_keys = _.difference(_.keys(obj), expected_keys);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-137">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-137">&#182;</a>
-              </div>
-              <p>Make sure all of the predicates in the schema hold for the expected keys</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> expected_valid = expected_keys.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">acc,k</span>)</span>{</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-138">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-138">&#182;</a>
-              </div>
-              <p>The top level object from <code>objectParser(o)</code>, should probably refactor out</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">var</span> currentPred = parser(o[k]);
-			<span class="hljs-keyword">if</span>(currentPred.__IS_THUNK__) {</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-139">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-139">&#182;</a>
-              </div>
-              <p>Pass in the object context if our pred is a thunk
-used for <code>$sibling$</code></p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>					<span class="hljs-keyword">return</span> acc &amp;&amp; currentPred([obj, obj[k]]);
-				}
-			<span class="hljs-keyword">return</span> acc &amp;&amp; currentPred(obj[k]);
-		}, <span class="hljs-literal">true</span>);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-140">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-140">&#182;</a>
-              </div>
-              <p>Is it ok that we have any unexpected keys? If we’re using specials, yes.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> unexpected_ok = SPECIALS_PRESENT();</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-141">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-141">&#182;</a>
-              </div>
-              <p>Return false if we found unexpected values and weren’t using specials,
-otherwise return our results for evaluating the expected keys</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">return</span> (unexpected_keys.length &gt; <span class="hljs-number">0</span>)? (expected_valid &amp;&amp; unexpected_ok) : expected_valid;
-	}</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-142">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-142">&#182;</a>
-              </div>
-              <p><strong>Test the object’s keys using <code>test_regular_keys</code> and any specials evaulators</strong></p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">testObjectKeys</span>(<span class="hljs-params">obj</span>) </span>{
-		<span class="hljs-keyword">var</span> regular = test_regular_keys(obj);
-		<span class="hljs-keyword">var</span> specials = SPECIALS_USED.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">acc, current</span>)</span>{
-			<span class="hljs-keyword">if</span>(SPECIALS_ENV.preds[current]) {
-				<span class="hljs-keyword">return</span> acc &amp;&amp; SPECIALS_ENV.test[current](obj);
-			} <span class="hljs-keyword">else</span> {
-				<span class="hljs-keyword">return</span> acc;
-			}
-		}, <span class="hljs-literal">true</span>);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-143">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-143">&#182;</a>
-              </div>
-              <p>If we’re using specials, make sure that both the specials evaluation
-and the regular evaluation are true. Otherwise, we only care that the regular
-keys are true;</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">return</span> (SPECIALS_PRESENT())? (regular &amp;&amp; specials) : regular;
-	}
-
-
-	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">equalKeys</span>(<span class="hljs-params">x</span>) </span>{ <span class="hljs-keyword">return</span> _.isEqual(_.keys(x).sort(), SPECIALS_ENV.keys.sort()); }
-	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">subSetKeys</span>(<span class="hljs-params">x</span>) </span>{ <span class="hljs-keyword">return</span> isSubset(SPECIALS_ENV.keys, _.keys(x)); }</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-144">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-144">&#182;</a>
-              </div>
-              <p>Get an array of specials used in the object by testing each key in <code>o</code></p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> specialsInObject = _.flatten(_.keys(o).map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v</span>)</span>{ <span class="hljs-keyword">return</span> parseSpecial(v) }));</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-145">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-145">&#182;</a>
-              </div>
-              <p>Define which specials we’re going to test for in the object keys</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> SPECIALS_USED = [<span class="hljs-string">'STAR_STAR'</span>, <span class="hljs-string">'STAR'</span>];</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-146">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-146">&#182;</a>
-              </div>
-              <p>Set up our environment by filtering out the keys that are used by specials
-from the regular object keys</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> SPECIALS_ENV = SPECIALS_USED.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">acc,current</span>)</span>{
-			<span class="hljs-keyword">return</span> genericStar(acc, current);
-		}, {obj: o, keys: _.keys(o), specialsInObject: specialsInObject, preds: {}});</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-147">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-147">&#182;</a>
-              </div>
-              <p>Register our specials evaluators with the environment</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	SPECIALS_ENV.test = {};
-	SPECIALS_ENV.test[<span class="hljs-string">'STAR'</span>] = test_special(test_star, <span class="hljs-string">'STAR'</span>);
-	SPECIALS_ENV.test[<span class="hljs-string">'STAR_STAR'</span>] = test_special(test_star_star, <span class="hljs-string">'STAR_STAR'</span>);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-148">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-148">&#182;</a>
-              </div>
-              <p>Start building up the object parser</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> preds = [];</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-149">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-149">&#182;</a>
-              </div>
-              <p>Add object test</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	preds.push(testObjectKeys);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-150">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-150">&#182;</a>
-              </div>
-              <p>Ff no specials are used we want to be more strict that all keys in the object match
-the keys specified in the schema.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span> (SPECIALS_PRESENT()) {
-		preds.push(subSetKeys);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-151">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-151">&#182;</a>
-              </div>
-              <p>Otherwise, make sure that the keys in the schema that aren’t specials related
-are included in the object we’re testing.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	} <span class="hljs-keyword">else</span> {
-		preds.push(equalKeys);
-	}</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-152">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-152">&#182;</a>
-              </div>
-              <p>Can’t be {} (since we’re using that as a shorthand for isObject)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	preds.push(isNonempty);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-153">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-153">&#182;</a>
-              </div>
-              <p>Make sure it’s really an object! If this fails, all other tests will be skipped</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	preds.push(isObject);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-154">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-154">&#182;</a>
-              </div>
-              <p>Return the composed object parser</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">return</span> composePredicatesWithWrapped(preds, andWrapped);
-}</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-155">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-155">&#182;</a>
-              </div>
-              <p><strong>The combined parser generator</strong></p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parser</span>(<span class="hljs-params">v</span>) </span>{</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-156">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-156">&#182;</a>
-              </div>
-              <p>default value parser fallback</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> p = valueParser;</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-157">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-157">&#182;</a>
-              </div>
               <p>dispatch on arrays</p>
 
             </div>
@@ -2666,11 +2164,11 @@ are included in the object we’re testing.</p>
         </li>
         
         
-        <li id="section-158">
+        <li id="section-119">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-158">&#182;</a>
+                <a class="pilcrow" href="#section-119">&#182;</a>
               </div>
               <p>if [], make it a shortcut for isArray</p>
 
@@ -2682,11 +2180,11 @@ are included in the object we’re testing.</p>
         </li>
         
         
-        <li id="section-159">
+        <li id="section-120">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-159">&#182;</a>
+                <a class="pilcrow" href="#section-120">&#182;</a>
               </div>
               <p>override valueParser, and use the schema parser for arrays</p>
 
@@ -2700,11 +2198,11 @@ are included in the object we’re testing.</p>
         </li>
         
         
-        <li id="section-160">
+        <li id="section-121">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-160">&#182;</a>
+                <a class="pilcrow" href="#section-121">&#182;</a>
               </div>
               <p>dispatch on object</p>
 
@@ -2715,11 +2213,11 @@ are included in the object we’re testing.</p>
         </li>
         
         
-        <li id="section-161">
+        <li id="section-122">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-161">&#182;</a>
+                <a class="pilcrow" href="#section-122">&#182;</a>
               </div>
               <p>if {}, make it a shortcut for isObject</p>
 
@@ -2731,11 +2229,11 @@ are included in the object we’re testing.</p>
         </li>
         
         
-        <li id="section-162">
+        <li id="section-123">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-162">&#182;</a>
+                <a class="pilcrow" href="#section-123">&#182;</a>
               </div>
               <p>override valueParser, and use the schema parser for objects
 (Note that this def of isObject excludes arrays and functions.)</p>
@@ -2750,11 +2248,11 @@ are included in the object we’re testing.</p>
         </li>
         
         
-        <li id="section-163">
+        <li id="section-124">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-163">&#182;</a>
+                <a class="pilcrow" href="#section-124">&#182;</a>
               </div>
               <p>dispatch on string</p>
 
@@ -2765,11 +2263,11 @@ are included in the object we’re testing.</p>
         </li>
         
         
-        <li id="section-164">
+        <li id="section-125">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-164">&#182;</a>
+                <a class="pilcrow" href="#section-125">&#182;</a>
               </div>
               <p>test for the presence of any specials</p>
 
@@ -2781,11 +2279,11 @@ are included in the object we’re testing.</p>
         </li>
         
         
-        <li id="section-165">
+        <li id="section-126">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-165">&#182;</a>
+                <a class="pilcrow" href="#section-126">&#182;</a>
               </div>
               <p>right now we’re assuming that there can only be one special
 per string (which isn’t true), but this works for now</p>
@@ -2797,11 +2295,11 @@ per string (which isn’t true), but this works for now</p>
         </li>
         
         
-        <li id="section-166">
+        <li id="section-127">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-166">&#182;</a>
+                <a class="pilcrow" href="#section-127">&#182;</a>
               </div>
               <p>match <code>*</code> up to isAnything</p>
 
@@ -2814,11 +2312,11 @@ per string (which isn’t true), but this works for now</p>
         </li>
         
         
-        <li id="section-167">
+        <li id="section-128">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-167">&#182;</a>
+                <a class="pilcrow" href="#section-128">&#182;</a>
               </div>
               <p>match up <code>$...$</code> to the sibling parser</p>
 
@@ -2831,18 +2329,18 @@ per string (which isn’t true), but this works for now</p>
         </li>
         
         
-        <li id="section-168">
+        <li id="section-129">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-168">&#182;</a>
+                <a class="pilcrow" href="#section-129">&#182;</a>
               </div>
               <p>otherwise use the default parseSpecial parser</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">default</span>:
-					p = parseSpecial;
+					p = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x</span>) </span>{ <span class="hljs-keyword">return</span> parseSpecial; }
 			}
 		};
 	};</pre></div></div>
@@ -2850,11 +2348,11 @@ per string (which isn’t true), but this works for now</p>
         </li>
         
         
-        <li id="section-169">
+        <li id="section-130">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-169">&#182;</a>
+                <a class="pilcrow" href="#section-130">&#182;</a>
               </div>
               <p>return the dispatched parser</p>
 
@@ -2866,23 +2364,44 @@ per string (which isn’t true), but this works for now</p>
         </li>
         
         
-        <li id="section-170">
+        <li id="section-131">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-170">&#182;</a>
+                <a class="pilcrow" href="#section-131">&#182;</a>
               </div>
-              <p>register the components to export</p>
+              <p>// register the components to export
+exports[‘parser’] = parser;
+exports[‘o’] = o;
+exports[‘Failure’] = Failure;</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>exports[<span class="hljs-string">'parser'</span>] = parser;
-exports[<span class="hljs-string">'o'</span>] = o;
-exports[<span class="hljs-string">'Failure'</span>] = Failure;
+        </li>
+        
+        
+        <li id="section-132">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-132">&#182;</a>
+              </div>
+              <p>return exports;</p>
 
-<span class="hljs-keyword">return</span> exports;
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-133">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-133">&#182;</a>
+              </div>
+              <p>};</p>
 
-};</pre></div></div>
+            </div>
             
         </li>
         

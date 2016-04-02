@@ -635,7 +635,8 @@ function objectParser(obj) {
 		var filteredTests = tests
 			.filter(function(t){return t.type === type; })
 			.sort(function(a,b) {
-				if(!a) { return 0; }
+				if(!a && !b) { return 0; }
+				if(!a) { return -1; }
 				if(!b) { return 1; }
 				if (a.df > b.df) return 1;
 				if (a.df === b.df) return 0;
