@@ -927,127 +927,131 @@ function parser(v) {
 
 // };
 
-/********* new Object parser *************/
-var SPECIALS_TYPES = ['KEY', 'existential', 'VALUE'];
-
-function isSpecialType(name, type) {
-	return SPECIALS.filter(function(v){ return (v.name === name) && (v.type.indexOf(type) !== -1); }).length > 0;
-}
-
-function isKeySpecial(name)		{ return isSpecialType(name, 'KEY'); }
-function isValueSpecial(name)	{ return isSpecialType(name, 'VALUE'); }
-function isExistentialSpecial(name)	{return isSpecialType(name, 'EXISTENTIAL'); }
-
-var EXISTENTIAL_LOOKUP = {
-	'OPTIONAL': zeroOr_,
-	'STAR': exactly_(1),
-	'STAR_STAR': nOrMore(0),
-	'__literal__': exactly_(1)
-};
-
-var KEY_PRED_LOOKUP = {
-	'STAR': isAnything,
-	'STAR_STAR': isAnything,
-	'__literal__': is
-}
-
-function zeroOr_(f) {
-	return function(x) {
-		return ((x.length === 0) || f(x));
+function newObjectParser(obj) {
+	
+	function makeTest(type, predicate, df, cost) {
+		return {type: type, predicate: predicate, df: df, cost: cost}
 	}
-}
 
-function exactly_(n) {
-	return function(x) {
-		return x.length === n;
+	function testType(type, tests, arr) {
+		var arrDf = arr.length;
+		var filteredTests = tests
+			.filter(function(t){return t.type === type; })
+			.sort(function(a,b) {
+				if (a.df > b.df) return 1;
+				if (a.df === b.df) return 0;
+				if (a.df < b.df) return -1;
+			});
+		var testCost = filteredTests.reduce(function(acc, c) { return acc + c.cost; }, 0);
+
+		if (testCost > arrDf) throw new Error("Not enough DF available to perform test");
+
+		var currentTest = filteredTests[0];
+		var remainingTests = filteredTests.slice(1);
+
+		var testResults = arr.map(function(v){ 
+			var keyTest = key(currentTest.predicate)(key(v));
+			var valueTest = value(currentTest.predicate)(value(v));
+			return keyTest && valueTest;
+		});
+		
+		var successes = testResults.reduce(function(a,c) {if(c){ return a+1; } return a;}, 0);
+
+		if (successes < testCost) throw new Error("Couldn't satisfy required predicate");
+
+		var reducedArray = [];
+		if (currentTest.df === Infinity) {
+			for(var i=0; i<testResults.length; i++){
+				if(!testResults[i]) { reducedArray.push(arr[i]) };
+			}
+		} else {
+			var pushed = 0;
+			for(var i=0; i<testResults.length; i++){
+				if(pushed <= currentTest.df) {
+					if(!testResults[i]) { reducedArray.push(arr[i]) };
+				} else {
+					reducedArray.push(arr[i]);
+				}
+			}
+		}
+
+		if (remainingTests.length === 0) return reducedArray;
+
+		return testType(type, remainingTests, reducedArray);
 	}
-}
 
-function nOrMore(n) {
-	return function(x) {
-		return x.length >= n;
+	// todo transition from key/value pair array to object -> for now just use _.toPairs ?
+	function is(v) { return function(x) { return x === v; }}
+
+	function key(pair) { return pair[0]; }
+	function value(pair) { return pair[1]; }
+
+	function makePair(key, value) {
+		return [key, value];
 	}
-}
 
-function nOrLess(n) {
-	return function(x) {
-		return x.length <= n;
+	function makePredicatePair(keyPredicate, valuePredicate) { return makePair(keyPredicate, valuePredicate); }
+
+	function evalObject(obj, tests) {
+		var pairs = _.toPairs(obj);
+		var boundResults;
+		
+		try {
+			boundResults = testType('BOUND', tests, pairs);
+		} catch(e) {
+			return false;
+		}
+
+		var freeResults;
+		try {
+			freeResults = testType('FREE', tests, boundResults);
+		} catch(e) {
+			return false;
+		}
+
+		return freeResults.length === 0; // nothing left over !
 	}
-}
 
-function is(v) {
-	return function(x) {
-		return x === v;
-	}
-}
+	function parseSchemaObject(obj) {
+		var keys = Object.keys(obj);
 
-function isAnything(x) { return true; }
-function exactlyOne(x) { return x.length === 1; }
-function zeroOrOne(x) { return (x.length === 0) || (x.length === 1); }
-function zeroOrMore(x) { return x.length >= 0; }
-function oneOrMore(x) { return x.length >= 1; }
+		var tests = [];
 
-function parseOneField(config) {
-	var keyPredicate = config.keyPredicate;
-	var valuePredicate = config.valuePredicate;
-	var existentialPredicate = config.existentialPredicate;
+		keys.forEach(function(k){
+			var specials = parseSpecial(k);
 
-	return function(obj) {
-		var values = {};
-		_.keys(obj).forEach(function(k){
-			if(valuePredicate(obj[k])) values[k] = obj[k];
+			if (specials.length === 0) {
+				tests.push(makeTest('BOUND', makePredicatePair(is(k), parser(obj[k])), 1, 1));
+			}
+
+			var optional = specials.reduce(function(acc,v){ return acc || v.name === 'OPTIONAL'}, false);
+			var star = specials.reduce(function(acc,v){ return acc || v.name === 'STAR'}, false);
+			var star_star = specials.reduce(function(acc,v){ return acc || v.name === 'STAR_STAR'}, false);
+
+			if (star) {
+				var cost = 1;
+				if(optional) { cost = 0; }
+				tests.push(makeTest('FREE', makePredicatePair(isAnything, parser(obj[k])), 1, cost));
+			}
+
+			if (star_star) {
+				var cost = 1;
+				if(optional) {cost = 0; }
+				tests.push(makeTest('FREE', makePredicatePair(isAnything, parser(obj[k])), Infinity, cost));
+			}
+
+			if(optional && !(star||star_star)) {
+				var testVal = specials[0].result;
+				tests.push(makeTest('BOUND', makePredicatePair(is(testVal), parser(obj[k])), 1, 0));
+			}
+
 		});
 
-		console.log(values);
-
-		var allValuesTrue = _.keys(values).length > 0;
-		var existentialsTrue = existentialPredicate(_.keys(obj));
-		var keysTrue = _.keys(values).reduce(function(acc, current) { return acc && keyPredicate(current); }, true);
-
-		console.log("VALUES: ", allValuesTrue);
-		console.log("EXIST: ", existentialsTrue);
-		console.log("KEYS ", keysTrue);
-
-		return (allValuesTrue && existentialsTrue && keysTrue);
-	}
-}
-
-function makeParserConfig(k, v) {
-	var existentialPred = exactly_(1);
-	var keyPred = is(k);
-	var valuePred = parser(v);
-
-	var specials = parseSpecial(k);
-
-	if(specials.length > 0) {
-		var existentialPreds = specials.map(function(v){return EXISTENTIAL_LOOKUP[v.name]});
-
-		var keyPreds = specials.filter(function(v){ 
-			return isKeySpecial(v.name); 
-		}).map(function(v){return KEY_PRED_LOOKUP[v.name]});
-
-		if (existentialPreds.length > 0) {
-			existentialPred = existentialPreds.reverse().reduce(function(acc, current){
-				return current(acc);
-			});
-		}
-		if (keyPreds.length > 0) {
-			keyPred = composePredicatesWithWrapped(keyPreds, andWrapped);
-		}
+		return function op(o) {
+			return evalObject(o, tests);
+		};
 	}
 
-	return {keyPredicate: keyPred, valuePredicate: valuePred, existentialPredicate: existentialPred};
-
+	return parseSchemaObject(obj);
 }
 
-function parseWholeObject(o) {
-	var keys = _.keys(o);
-	//console.log(keys);
-
-	var parserConfigs = keys.map(function(k){ return makeParserConfig(k, o[k]); });
-	//console.log(parserConfigs);
-
-	var parsers = parserConfigs.map(function(v){ return parseOneField(v)});
-	//return composePredicatesWithWrapped(parsers, andWrapped);
-	return parsers;
-}
