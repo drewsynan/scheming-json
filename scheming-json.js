@@ -617,251 +617,152 @@ function arrayParser(a) {
 }
 
 // **objectParser** Returns a compound parser matching schema rules for each key and value of an object `o`
-function objectParser(o) {
-	// For holding the specials we parse out from the object
-	var SPECIALS_USED;
-	var SPECIALS_ENV;
+function objectParser(obj) {
 	
-	// **Returns true if we are parsing any specials**
-	function SPECIALS_PRESENT() { return _.keys(SPECIALS_ENV.preds).length > 0; }
-	function WILD_CARDS() { 
-		return !!SPECIALS_ENV['STAR'] && !!SPECIALS_ENV['STAR_STAR']; 
+	function makeTest(type, predicate, df, cost, name) {
+		return {type: type, predicate: predicate, df: df, cost: cost, name: name}
 	}
 
-	// **Filter out any keys in the object that we're going to parsing in a special
-	// and remove them from the general pool of keys we're going to consider.**
-	//
-	// Takes a `config` object with
-	// * the object we're parsing,
-	// * The keys that we're going to parse
-	// * and an array of any specials found to be used in the object and want to test for 
-	//   and remove keys from general consideration.
-	// * and a special name `specialName`
-	//
-	// Returns a specials object with same key names a `config`, but with keys that have 
-	// been filtered according to the rules of the special, and object contining all the
-	// necessary predicates to parse the special on the object.
-	function genericStar(config/*={obj, keys, specialsInObject, preds, spokenFor}*/, specialName){
-		var obj = config.obj;
-		var keys = config.keys;
-		var specialsInObject = config.specialsInObject;
+	function testType(type, tests, arr, successCount, totalCost) {
+		successCount = successCount || 0;
 
-		var matchingSpecials = specialsInObject.filter(function(v){ return v.name === specialName });
-
-		var spokenFor = matchingSpecials.filter(function(v){ return v.result !== ""}).map(function(v){return v.result});
-
-		if (spokenFor.length > 0) {
-			config.spokenFor[specialName] = [].concat(config.spokenFor[specialName] || []).concat(spokenFor);
+		if(tests.length === 0 && arr.length !== 0) {
+			throw new Error("Empty Test Array");
 		}
 
-		// Only look at the specials that match `specialName`, and then get the schema object
-		// values (which hold predicates) for each key that has the special.
-		var preds = matchingSpecials.map(function(v){ return obj[v.input] });
 
-		// All the rest of the keys that don't use any special operator
-		// by checking to see if the key value matches an input for a found
-		// parsed special
-		var remainingKeys = keys.filter(function(v) { 
-			var notInSpecials = specialsInObject.reduce(function(acc, parsedSpecial){
-				return acc && (v !== parsedSpecial.input);
-			}, true);
-			return notInSpecials;
+		var arrDf = arr.length;
+		var filteredTests = tests
+			.filter(function(t){return t.type === type; })
+			.sort(function(a,b) {
+				if(!a) { return 0; }
+				if(!b) { return 1; }
+				if (a.df > b.df) return 1;
+				if (a.df === b.df) return 0;
+				if (a.df < b.df) return -1;
+			});
+
+		if(filteredTests.length === 0 && arr.length === 0) {
+			return [];
+		}
+
+		var testCost = filteredTests.reduce(function(acc, c) { return acc + c.cost; }, 0);
+		totalCost = totalCost || testCost;
+
+		if (testCost > arrDf) throw new Error("Not enough DF available to perform test");
+
+		var currentTest = filteredTests[0];
+		var remainingTests = filteredTests.slice(1);
+
+		var testResults = arr.map(function(v){ 
+			var keyTest = key(currentTest.predicate)(key(v));
+			var valueTest = value(currentTest.predicate)(value(v));
+			return keyTest && valueTest;
+		});
+		
+		var successes = successCount + testResults.reduce(function(a,c) {if(c){ return a+1; } return a;}, 0);
+
+		var reducedArray = [];
+		if (currentTest.df === Infinity) {
+			for(var i=0; i<testResults.length; i++){
+				if(!testResults[i]) { reducedArray.push(arr[i]) };
+			}
+		} else {
+			var pushed = 0;
+			for(var i=0; i<testResults.length; i++){
+				if(pushed <= currentTest.df) {
+					if(!testResults[i]) { reducedArray.push(arr[i]) };
+				} else {
+					reducedArray.push(arr[i]);
+				}
+			}
+		}
+
+		if (remainingTests.length === 0) {
+			if (successes < totalCost) {
+				throw new Error("Couldn't satisfy required predicate");
+			}
+			return reducedArray;
+		}
+
+		return testType(type, remainingTests, reducedArray, successes, totalCost);
+	}
+
+	// todo transition from key/value pair array to object -> for now just use _.toPairs ?
+	function is(v) { return function(x) { return x === v; }}
+
+	function key(pair) { return pair[0]; }
+	function value(pair) { return pair[1]; }
+
+	function makePair(key, value) {
+		return [key, value];
+	}
+
+	function makePredicatePair(keyPredicate, valuePredicate) { return makePair(keyPredicate, valuePredicate); }
+
+	function evalObject(obj, tests) {
+		var pairs = _.toPairs(obj);
+		
+		var boundResults;
+		try {
+			boundResults = testType('BOUND', tests, pairs);
+		} catch(e) {
+			console.log(e);
+			return false;
+		}
+
+		var freeResults;
+		try {
+			freeResults = testType('FREE', tests, boundResults);
+		} catch(e) {
+			console.log(e);
+			return false;
+		}
+
+		return freeResults.length === 0; // nothing left over !
+	}
+
+	function parseSchemaObject(obj) {
+		var keys = Object.keys(obj);
+
+		var tests = [];
+
+		keys.forEach(function(k){
+			var specials = parseSpecial(k);
+
+			if (specials.length === 0) {
+				tests.push(makeTest('BOUND', makePredicatePair(is(k), parser(obj[k])), 1, 1));
+			}
+
+			var optional = specials.reduce(function(acc,v){ return acc || v.name === 'OPTIONAL'}, false);
+			var star = specials.reduce(function(acc,v){ return acc || v.name === 'STAR'}, false);
+			var star_star = specials.reduce(function(acc,v){ return acc || v.name === 'STAR_STAR'}, false);
+
+			if (star) {
+				var cost = 1;
+				if(optional) { cost = 0; }
+				tests.push(makeTest('FREE', makePredicatePair(isAnything, parser(obj[k])), 1, cost));
+			}
+
+			if (star_star) {
+				var cost = 1;
+				if(optional) {cost = 0; }
+				tests.push(makeTest('FREE', makePredicatePair(isAnything, parser(obj[k])), Infinity, cost));
+			}
+
+			if(optional && !(star||star_star)) {
+				var testVal = specials[0].result;
+				tests.push(makeTest('BOUND', makePredicatePair(is(testVal), parser(obj[k])), 1, 0));
+			}
+
 		});
 
-		// If there are any specials used in the object we're considering
-		if (preds.length > 0) {
-			// get any already registered preds for this special name
-			// and combine them with the ones we found.
-			// Start with an empty array to give a default if config.preds[SpecialName]
-			// is undefined (i.e. not registered)
-			config.preds[specialName] = [].concat(config.preds[specialName] || []).concat(preds);
-		}
-
-		return {obj: obj, keys: remainingKeys, specialsInObject: specialsInObject, preds: config.preds, spokenFor: config.spokenFor};
-	}
-
-	// **Return a parser for a special called `SPECIAL_NAME` using the special evaluator `f`**
-	function test_special(f, SPECIAL_NAME){
-		return function(obj) {
-			// Look up the preds we need for the special in the `SPECIALS_ENV`
-			var preds = SPECIALS_ENV.preds[SPECIAL_NAME];
-			// Get the keys that don't use specials
-			var remaining_keys = SPECIALS_ENV.keys;
-			// Get the keys that do use specials
-			var affected_keys = _.difference(_.keys(obj), remaining_keys);
-			var spokenFor = SPECIALS_ENV.spokenFor[SPECIAL_NAME];
-
-			// Apply the evaluator `f` for our special and return the result
-			return f(obj, remaining_keys, affected_keys, preds, spokenFor);
-		}
-	};
-
-	// **The evaluator for the * special**
-	function test_star(obj, remaining_keys, affected_keys, preds) {
-
-			function incrementIfExists(o, k, inc) {
-				if(o[k]) {
-					o[k] = o[k] + inc;
-				} else {
-					o[k] = inc;
-				}
-				return o;
-			}
-			// we need to count each distinct predicate function ... there is no way to distinguish
-			// between two functions that *do* the same thing, so beware.......
-			var pred_counts = preds.reduce( function(acc, p){ return incrementIfExists(acc, p, 1); }, {});
-
-			// now, take all the keys leftover from the object that aren't in 'keys'
-			// apply all the star preds
-			var pred_successes = preds.reduce(function(acc_outer, p){
-				var successes = affected_keys.reduce(function(acc,current){
-					if(parser(p)(obj[current])) {
-						return acc +1;
-					} else {
-						return acc;
-					}
-				}, 0);
-				incrementIfExists(acc_outer, p, successes);
-				return acc_outer;
-			}, {});
-
-			// and count how many trues there are, and make sure the numbers match up!
-			//console.log(pred_counts, pred_successes);
-			return _.isEqual(pred_counts, pred_successes);
+		return function op(o) {
+			return evalObject(o, tests);
 		};
-
-	// **evaluator for the ** special**
-	function test_star_star(obj, remaining_keys, affected_keys, preds) {
-		// make sure that any of the preds used for the ** special
-		// are true all keys that are going to be evaulated using the special
-		return affected_keys.reduce(function(a,k){
-			var predsMatchForK = preds.reduce(function(acc,p){
-				return (acc || parser(p)(obj[k]))
-			}, false);
-			
-			return (a && predsMatchForK);
-		}, true);
-	};
-
-	// **evaluator for the (optional) special**
-	function test_optional(obj, remaining_keys, affected_keys, preds, spokenFor) {
-		return spokenFor.reduce(function(acc, current){
-			if(obj[current]) {
-				var allPreds = composePredicatesWithWrapped(preds, andWrapped)(obj[current]);
-				return (acc && allPreds);
-			}
-			else {
-				return (acc && true);
-			}
-		}, true);
-	}	
-
-	// **Evaluator for keys that don't use specials**
-	function test_regular_keys(obj) {
-		console.log("regular keys");
-
-		// The keys we expected to find, based on the schema
-		var expected_keys = SPECIALS_ENV.keys;
-		// Keys in the object that we found that weren't described in the schema
-		var unexpected_keys = _.difference(_.keys(obj), expected_keys);
-
-		// Make sure all of the predicates in the schema hold for the expected keys
-		var expected_valid = expected_keys.reduce(function(acc,k){
-			// The top level object from `objectParser(o)`, should probably refactor out
-			var currentPred = parser(o[k]);
-			if(currentPred.__IS_THUNK__) {
-					// Pass in the object context if our pred is a thunk
-					// used for `$sibling$`
-					return acc && currentPred([obj, obj[k]]);
-				}
-			return acc && currentPred(obj[k]);
-		}, true);
-
-		// Is it ok that we have any unexpected keys? If we're using specials, yes.
-		var unexpected_ok = SPECIALS_PRESENT() && allSpokenFor(unexpected_keys);
-
-		// Return false if we found unexpected values and weren't using specials,
-		// otherwise return our results for evaluating the expected keys
-		return (unexpected_keys.length > 0)? (expected_valid && unexpected_ok) : expected_valid;
 	}
 
-	// **Test the object's keys using `test_regular_keys` and any specials evaulators**
-	function testObjectKeys(obj) {
-		var regular = test_regular_keys(obj);
-		var specials = SPECIALS_USED.reduce(function(acc, current){
-			if(SPECIALS_ENV.preds[current]) {
-				return acc && SPECIALS_ENV.test[current](obj);
-			} else {
-				return acc;
-			}
-		}, true);
-
-		// If we're using specials, make sure that both the specials evaluation
-		// and the regular evaluation are true. Otherwise, we only care that the regular
-		// keys are true;
-		return (SPECIALS_PRESENT())? (regular && specials) : regular;
-	}
-
-	function allSpokenFor(unexpected_arr) {
-
-		function inSpoken(x) {
-			return _.keys(SPECIALS_ENV.spokenFor).reduce(function(acc, current){
-				var found = SPECIALS_ENV.spokenFor[current].indexOf(x) !== -1;
-				return acc || found;
-			}, false);
-		}
-
-		var allFound = unexpected_arr.reduce(function(acc, current){ 
-			return acc && inSpoken(current); 
-		}, true);
-
-		return allFound;
-	}
-
-	function equalKeys(x) { return _.isEqual(_.keys(x).sort(), SPECIALS_ENV.keys.sort()); }
-	function subSetKeys(x) { return isSubset(SPECIALS_ENV.keys, _.keys(x)); }
-
-	// Define which specials we're going to test for in the object keys
-	var SPECIALS_USED = ['STAR', 'OPTIONAL'];//['STAR_STAR', 'STAR', 'OPTIONAL'];
-
-	// Get an array of specials used in the object by testing each key in `o`
-	var specialsInObject = _.flatten(
-			_.keys(o).map(function(v){ return parseSpecial(v) })
-		).filter(function(v){ return _.indexOf(SPECIALS_USED, v.name) !== -1;});
-
-	// Set up our environment by filtering out the keys that are used by specials
-	// from the regular object keys
-	var SPECIALS_ENV = SPECIALS_USED.reduce(function(acc,current){
-			return genericStar(acc, current);
-		}, {obj: o, keys: _.keys(o), specialsInObject: specialsInObject, preds: {}, spokenFor: {}});
-
-	// Register our specials evaluators with the environment
-	SPECIALS_ENV.test = {};
-	SPECIALS_ENV.test['STAR'] = test_special(test_star, 'STAR');
-	SPECIALS_ENV.test['STAR_STAR'] = test_special(test_star_star, 'STAR_STAR');
-	SPECIALS_ENV.test['OPTIONAL'] = test_special(test_optional, 'OPTIONAL');
-
-	// Start building up the object parser
-	var preds = [];
-	// Add object test
-	preds.push(testObjectKeys);
-
-	// Ff no specials are used we want to be more strict that all keys in the object match
-	// the keys specified in the schema.
-	if (SPECIALS_PRESENT()) {
-		preds.push(subSetKeys);
-
-	// Otherwise, make sure that the keys in the schema that aren't specials related
-	// are included in the object we're testing.
-	} else {
-		preds.push(equalKeys);
-	}
-
-	// Make sure it's really an object! If this fails, all other tests will be skipped
-	preds.push(isObject);
-
-	// Return the composed object parser
-	return composePredicatesWithWrapped(preds, andWrapped);
+	return parseSchemaObject(obj);
 }
 
 // **The combined parser generator**
@@ -926,132 +827,4 @@ function parser(v) {
 // return exports;
 
 // };
-
-function newObjectParser(obj) {
-	
-	function makeTest(type, predicate, df, cost) {
-		return {type: type, predicate: predicate, df: df, cost: cost}
-	}
-
-	function testType(type, tests, arr) {
-		var arrDf = arr.length;
-		var filteredTests = tests
-			.filter(function(t){return t.type === type; })
-			.sort(function(a,b) {
-				if (a.df > b.df) return 1;
-				if (a.df === b.df) return 0;
-				if (a.df < b.df) return -1;
-			});
-		var testCost = filteredTests.reduce(function(acc, c) { return acc + c.cost; }, 0);
-
-		if (testCost > arrDf) throw new Error("Not enough DF available to perform test");
-
-		var currentTest = filteredTests[0];
-		var remainingTests = filteredTests.slice(1);
-
-		var testResults = arr.map(function(v){ 
-			var keyTest = key(currentTest.predicate)(key(v));
-			var valueTest = value(currentTest.predicate)(value(v));
-			return keyTest && valueTest;
-		});
-		
-		var successes = testResults.reduce(function(a,c) {if(c){ return a+1; } return a;}, 0);
-
-		if (successes < testCost) throw new Error("Couldn't satisfy required predicate");
-
-		var reducedArray = [];
-		if (currentTest.df === Infinity) {
-			for(var i=0; i<testResults.length; i++){
-				if(!testResults[i]) { reducedArray.push(arr[i]) };
-			}
-		} else {
-			var pushed = 0;
-			for(var i=0; i<testResults.length; i++){
-				if(pushed <= currentTest.df) {
-					if(!testResults[i]) { reducedArray.push(arr[i]) };
-				} else {
-					reducedArray.push(arr[i]);
-				}
-			}
-		}
-
-		if (remainingTests.length === 0) return reducedArray;
-
-		return testType(type, remainingTests, reducedArray);
-	}
-
-	// todo transition from key/value pair array to object -> for now just use _.toPairs ?
-	function is(v) { return function(x) { return x === v; }}
-
-	function key(pair) { return pair[0]; }
-	function value(pair) { return pair[1]; }
-
-	function makePair(key, value) {
-		return [key, value];
-	}
-
-	function makePredicatePair(keyPredicate, valuePredicate) { return makePair(keyPredicate, valuePredicate); }
-
-	function evalObject(obj, tests) {
-		var pairs = _.toPairs(obj);
-		var boundResults;
-		
-		try {
-			boundResults = testType('BOUND', tests, pairs);
-		} catch(e) {
-			return false;
-		}
-
-		var freeResults;
-		try {
-			freeResults = testType('FREE', tests, boundResults);
-		} catch(e) {
-			return false;
-		}
-
-		return freeResults.length === 0; // nothing left over !
-	}
-
-	function parseSchemaObject(obj) {
-		var keys = Object.keys(obj);
-
-		var tests = [];
-
-		keys.forEach(function(k){
-			var specials = parseSpecial(k);
-
-			if (specials.length === 0) {
-				tests.push(makeTest('BOUND', makePredicatePair(is(k), parser(obj[k])), 1, 1));
-			}
-
-			var optional = specials.reduce(function(acc,v){ return acc || v.name === 'OPTIONAL'}, false);
-			var star = specials.reduce(function(acc,v){ return acc || v.name === 'STAR'}, false);
-			var star_star = specials.reduce(function(acc,v){ return acc || v.name === 'STAR_STAR'}, false);
-
-			if (star) {
-				var cost = 1;
-				if(optional) { cost = 0; }
-				tests.push(makeTest('FREE', makePredicatePair(isAnything, parser(obj[k])), 1, cost));
-			}
-
-			if (star_star) {
-				var cost = 1;
-				if(optional) {cost = 0; }
-				tests.push(makeTest('FREE', makePredicatePair(isAnything, parser(obj[k])), Infinity, cost));
-			}
-
-			if(optional && !(star||star_star)) {
-				var testVal = specials[0].result;
-				tests.push(makeTest('BOUND', makePredicatePair(is(testVal), parser(obj[k])), 1, 0));
-			}
-
-		});
-
-		return function op(o) {
-			return evalObject(o, tests);
-		};
-	}
-
-	return parseSchemaObject(obj);
-}
 
