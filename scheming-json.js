@@ -1,174 +1,177 @@
-// 'use strict';
-// function schemingJson(exports){
-	// scheming json
-	// -------------
+// scheming json
+// -------------
 
-	//😏 A lightweight, functional library for describing and validating JSON and JavaScript data
+//😏 A lightweight, functional library for describing and validating JSON and JavaScript data
 
-	// General Docs
-	// ------------
+// General Docs
+// ------------
 
-	// Describing JSON
-	// ----------------
+// Describing JSON
+// ----------------
 
-	// Consider the JSON structure 
-	// ```javascript
-	// var data = {articles: 
-	//   [{
-	//       title: 'The Title',
-	//       author: 'The Author',
-	//       published: '1/7/53',
-	//       tags: [
-	//         {tagName: 'Stuff'},
-	//         {tagName: 'Garbage'},
-	//         {tagName: 'uninteresting'}
-	//       ]
-	//     },
-	//     {
-	//       title: 'A title',
-	//       author: 'Somebody else',
-	//       published: '1/8/53',
-	//       tags: [
-	//         {tagName: 'Stuff'}
-	//       ]
-	//     }
-	//   ]};
-	// ```
-	//
-	// We could describe this using scheming json like so:
-	// ```javascript
-	// var schema = {articles: 
-	//   [{
-	//     title: isString,
-	//     author: isString,
-	//     published: isDateString,
-	//     tags: [{tagName: isString}]
-	//   }]
-	// };
-	// ```
-	//
-	// And get a parser function using
-	// ```javascript
-	// var articlesParser = parser(schema);
-	//
-	// var articlesValid = articlesParser(someArrayofArticles); // => true
-	// // hooray!
-	// ```
-	//
-	// Where the functions `isString`, and `isDateString` are user-defined (or library-defined) boolean-returning functions ("predicates").
-	//
-	// Alternatively, we could build up smaller schema pieces, and then combine them:
-	// ```javascript
-	// var tag = {tagName: isString};
-	// var article = {title: isString, author: isString, published: isDateString, tags[tag]};
-	// var articles = {articles: [article]};
-	// ```
+// Consider the JSON structure 
+// ```javascript
+// var data = {articles: 
+//   [{
+//       title: 'The Title',
+//       author: 'The Author',
+//       published: '1/7/53',
+//       tags: [
+//         {tagName: 'Stuff'},
+//         {tagName: 'Garbage'},
+//         {tagName: 'uninteresting'}
+//       ]
+//     },
+//     {
+//       title: 'A title',
+//       author: 'Somebody else',
+//       published: '1/8/53',
+//       tags: [
+//         {tagName: 'Stuff'}
+//       ]
+//     }
+//   ]};
+// ```
+//
+// We could describe this using scheming json like so:
+// ```javascript
+// var schema = {articles: 
+//   [{
+//     title: isString,
+//     author: isString,
+//     published: isDateString,
+//     tags: [{tagName: isString}]
+//   }]
+// };
+// ```
+//
+// And get a parser function using
+// ```javascript
+// var articlesParser = parser(schema);
+//
+// var articlesValid = articlesParser(someArrayofArticles); // => true
+// // hooray!
+// ```
+//
+// Where the functions `isString`, and `isDateString` are user-defined (or library-defined) boolean-returning functions ("predicates").
+//
+// Alternatively, we could build up smaller schema pieces, and then combine them:
+// ```javascript
+// var tag = {tagName: isString};
+// var article = {title: isString, author: isString, published: isDateString, tags: [tag]};
+// var articles = {articles: [article]};
+// ```
 
 
-	// Special values/operators
-	// ------------------------
-	// **
-	// --
-	// `**` says that we should apply the predicate to all other fields in an object that we haven't already specified.
+// Special values/operators
+// ------------------------
+// **
+// --
+// `**` says that we should apply the predicate to all other fields in an object that we haven't already specified.
 
-	// For example, this would also match our article example
-	// ```javascript
-	// var singleArticleAlt = {
-	//   title: isString,
-	//   tags: [tag],
-	//   '**': isString
-	// };
-	// ```
-	// This says 'match an object with a key named `title` that's a string, with a key named `tags` holding an array of tag objects, and with 0 or more keys named anything that are all strings.
+// For example, this would also match our article example
+// ```javascript
+// var singleArticleAlt = {
+//   title: isString,
+//   tags: [tag],
+//   '**': isString
+// };
+// ```
+// This says 'match an object with a key named `title` that's a string, with a key named `tags` holding an array of tag objects, and with 0 or more keys named anything that are all strings.
 
-	// *
-	// -
-	// `*` says that we should ignore either the key name or the type of value
-	// ```javascript
-	// var acceptAllNames = {name: '*'};
-	// ```
-	// Will match any object with one key called `name` that has any value.
+// *
+// -
+// `*` says that we should ignore either the key name or the type of value
+// ```javascript
+// var acceptAllNames = {name: '*'};
+// ```
+// Will match any object with one key called `name` that has any value.
 
-	// `*` can also appear in the key selector
-	// ```javascript
-	// var nameAndFunc = {name: '*', '*': isFunction};
-	// ```
+// `*` can also appear in the key selector
+// ```javascript
+// var nameAndFunc = {name: '*', '*': isFunction};
+// ```
 
-	// `*` can be used for multiple key value wildcards. However, since JavaScript object keys must be unique, it must be
-	// written like `*something*` (any arbitrary name between two *s).
+// `*` can be used for multiple key value wildcards. However, since JavaScript object keys must be unique, it must be
+// written like `*something*` (any arbitrary name between two *s).
 
-	// ```javascript
-	// var twoStrings = {'*a*': isString, '*b*': isString};
-	// ```
-	// This operator is super buggy right now :-(
+// ```javascript
+// var twoStrings = {'*a*': isString, '*b*': isString};
+// ```
+// This operator is super buggy right now :-(
 
-	// {} and []
-	// ---------
+// {} and []
+// ---------
 
-	// The empty object and empty array predicates will match either an object or an array, but not look at its contents.
-	// If we didn't care about the contents of our article tags we could have written
-	// ```javascript
-	// var tagsPresentButUnaccountedFor = {title: isString, author: isString, published: isDateString, tags []};
-	// ```
+// The empty object and empty array predicates will match either an object or an array, but not look at its contents.
+// If we didn't care about the contents of our article tags we could have written
+// ```javascript
+// var tagsPresentButUnaccountedFor = {title: isString, author: isString, published: isDateString, tags []};
+// ```
 
-	// If all we wanted to do was make sure that each article in our article array was an object
-	// ```javascript
-	// var articles_array = {articles: [{}]};
-	// ```
+// If all we wanted to do was make sure that each article in our article array was an object
+// ```javascript
+// var articles_array = {articles: [{}]};
+// ```
 
-	// Both the empty array and empty object notation are shorthands for `isArray` and `isObject` predicates.
+// Both the empty array and empty object notation are shorthands for `isArray` and `isObject` predicates.
 
-	// $...$
-	// -----
-	// The dollar sign operators allow lookup of sibling key values within the same object.
+// $...$
+// -----
+// The dollar sign operators allow lookup of sibling key values within the same object.
 
-	// ```javascript
-	//   {title: isString, author: myCoolLookupFunction('$title$')}
-	// ```
+// ```javascript
+//   {title: isString, author: myCoolLookupFunction('$title$')}
+// ```
 
-	// Coming soon: how to write functions that can accept `$...$` arguments.
+// Coming soon: how to write functions that can accept `$...$` arguments.
 
 
-	// Composing predicate functions
-	// -----------------------------
+// Composing predicate functions
+// -----------------------------
 
-	// The `composePredsWith` function takes an array of 1-argument predicates and pipes them together using `glue`.
-	// By default, predicates are glued together with `&&`.
+// The `composePredsWith` function takes an array of 1-argument predicates and pipes them together using `glue`.
+// By default, predicates are glued together with `&&`.
 
-	// As an example, let's make a predicate that only allows non-empty arrays
-	// ```javascript
-	// var isNonEmptyArray = compose1PredsWith([function(v){return !isEmpty(v)}, isArray], and);
-	// ```
-	// or a parser that allows either an empty array or an array of tags
-	// ```javascript
-	// var tagsOrEmpty = compose1PredsWith([parser([tag]), isEmptyArray], or);
-	// ```
+// As an example, let's make a predicate that only allows non-empty arrays
+// ```javascript
+// var isNonEmptyArray = compose1PredsWith([function(v){return !isEmpty(v)}, isArray], and);
+// ```
+// or a parser that allows either an empty array or an array of tags
+// ```javascript
+// var tagsOrEmpty = compose1PredsWith([parser([tag]), isEmptyArray], or);
+// ```
 
-	// To hide the explicit function application, scheming json also provides a composer called `o`.
+// To hide the explicit function application, scheming json also provides a composer called `o`.
 
-	// The Composer
-	// ------------
-	// The composer is an easier way of using `composePredicatesWith`.
-	// Initiall, the first predicate is wrapped with `o`, (e.g. `o(myPred)`),
-	// and subsequent predicates can be combined with it using the 
-	// `.and(...)`, `.or(...)`, `.nand(...)`, and `.nor(...)` methods.
-	// For example
-	// 
-	// ```javascript
-	// var compoundChain = o(myPred).and(myPred1).nand(myPred2);
-	// ```
-	// 
-	// To evaluate the chain, either pass in a value after the last item
-	// (i.e. `o(myPred).and(myPred1).nand(myPred2)(theValue)`)
-	// or use `()` to get a normal function that can be used on a value
-	// 
-	// ```javascript
-	// var compoundPred = o(myPred).and(myPred1).nand(myPred2)();
-	// var result = compoundPred(myVal);
-	// ```
+// The Composer
+// ------------
+// The composer is an easier way of using `composePredicatesWith`.
+// Initiall, the first predicate is wrapped with `o`, (e.g. `o(myPred)`),
+// and subsequent predicates can be combined with it using the 
+// `.and(...)`, `.or(...)`, `.nand(...)`, and `.nor(...)` methods.
+// For example
+// 
+// ```javascript
+// var compoundChain = o(myPred).and(myPred1).nand(myPred2);
+// ```
+// 
+// To evaluate the chain, either pass in a value after the last item
+// (i.e. `o(myPred).and(myPred1).nand(myPred2)(theValue)`)
+// or use `()` to get a normal function that can be used on a value
+// 
+// ```javascript
+// var compoundPred = o(myPred).and(myPred1).nand(myPred2)();
+// var result = compoundPred(myVal);
+// ```
 
-// (The rest of the code)
-// ----------------------
+// The code
+// --------
+
+'use strict';
+(function schemingJson(exports){
+	// browser for now
+	exports = exports || window;
 
 // Definition of Specials
 // --------
@@ -618,22 +621,52 @@ function arrayParser(a) {
 
 // **objectParser** Returns a compound parser matching schema rules for each key and value of an object `o`
 function objectParser(obj) {
-	
+	// The object parser works by treating the object as an array of key value pairs
+	// Schema rules for an object can either be **bound** or **free**
+	// A bound rule would be something like `{name: isString}` while a free rule would be
+	// `{'*': isString}` or `{'**': '*'}`. Generally free rules are wildcards, matching anything
+	// in the key part of the object, the value part of the object, or both.
+	// The object parser works by matching up all the bound rules first, and then trying to match
+	// any remaining key/value pairs left in the object to the free rules. If at the end there are any
+	// 'unclaimed' object key/value pairs left over that didn't satisfy a rule, or if any of the matching for free/bound
+	// variables failed, the parsing will fail.
+
+	// **make a container for a test** takes 
+	// * a test `type` (`'BOUND'` or `'FREE'`) 
+	// * a `predicate` function 
+	// * the number of degrees of freedom (`df`) the test consumes (i.e. how many key/value pairs the test will claim)
+	// * the `cost` of conducting the test (i.e. is the test required? If the cost is 1, we are required to reduce the 
+	//   remaining key/value pairs by 1, or the test fails)
+	// * optionally, the `name` of the test (currently unused, but will be used for error reporting in the furture)
 	function makeTest(type, predicate, df, cost, name) {
 		return {type: type, predicate: predicate, df: df, cost: cost, name: name}
 	}
 
+	// **run all tests of type 'type' on an array of values**
+	// takes
+	// * `type` of the test (right now either `BOUND` or `FREE`)
+	// * an array of `test`s created using `makeTest`
+	// * an array (`arr`) of key/value pairs to run the tests against
+	// the `successCount` and `totalCost` parameters are only used internally as accumulators
+	// as the function is tail-recursive
 	function testType(type, tests, arr, successCount, totalCost) {
+		// initialize the count of tests that have succeeded
 		successCount = successCount || 0;
 
+		// no tests, no data => why are you running this?
 		if(tests.length === 0 && arr.length !== 0) {
 			throw new Error("Empty Test Array");
 		}
 
-
+		// the initial number of degrees of freedom availible is the number of key/value pairs
 		var arrDf = arr.length;
+		// filter out only the tests we're intereted in in the from the test array
 		var filteredTests = tests
 			.filter(function(t){return t.type === type; })
+			// and sort by the degrees of freedom. This is because tests that use up more than one key/value
+			// pair (like `**`) need to be tested after tests that consume a fixed number of degrees of freedom.
+			// Internally, the df for tests that consume as many matches as they can find is `Infinity` (and so when
+			// sorting it puts them at the end) 
 			.sort(function(a,b) {
 				if(!a && !b) { return 0; }
 				if(!a) { return -1; }
@@ -643,32 +676,45 @@ function objectParser(obj) {
 				if (a.df < b.df) return -1;
 			});
 
+		// we've tested all the data in our array! (Base case for the recursion)
 		if(filteredTests.length === 0 && arr.length === 0) {
 			return [];
 		}
 
+		// figure out the minimum number of df all the tests will consume
 		var testCost = filteredTests.reduce(function(acc, c) { return acc + c.cost; }, 0);
+		// if this is the first time we've computed the cost, use the cost, otherwise use the cost
+		// for the all the tests. This is passed through the recursions using an accumulator.
 		totalCost = totalCost || testCost;
 
-		if (testCost > arrDf) throw new Error("Not enough DF available to perform test");
+		// if we expect to consume more key/value pairs than exist, the test must fail
+		if (testCost > arrDf) throw new Error("Not enough degrees of freedom available to perform test");
 
+		// pick out the first test from the test array
 		var currentTest = filteredTests[0];
+		// put the rest into a new array
 		var remainingTests = filteredTests.slice(1);
 
+		// map the current test (which has both key and value tests) over the array of key/value pairs
 		var testResults = arr.map(function(v){ 
 			var keyTest = key(currentTest.predicate)(key(v));
 			var valueTest = value(currentTest.predicate)(value(v));
 			return keyTest && valueTest;
 		});
 		
+		// add the number of successes from our current test to the running total
 		var successes = successCount + testResults.reduce(function(a,c) {if(c){ return a+1; } return a;}, 0);
 
+		// reduce our value array to get rid of any values that were consumed ("claimed") by the test we just ran
 		var reducedArray = [];
+		// if the test has infinite degrees of freedom, it will claim every key/value pair for which
+		// it succeeded
 		if (currentTest.df === Infinity) {
 			for(var i=0; i<testResults.length; i++){
 				if(!testResults[i]) { reducedArray.push(arr[i]) };
 			}
 		} else {
+			// otherwise match the first `df` successes, and leave the rest
 			var pushed = 0;
 			for(var i=0; i<testResults.length; i++){
 				if(pushed <= currentTest.df) {
@@ -679,31 +725,42 @@ function objectParser(obj) {
 			}
 		}
 
+		// we just ran the last test
 		if (remainingTests.length === 0) {
+			// if we didn't have enough successes to meet the minimum required number of successes
+			// then fail
 			if (successes < totalCost) {
 				throw new Error("Couldn't satisfy required predicate");
 			}
+			// return the reduced array (which at this point should be `[]`)
 			return reducedArray;
 		}
 
+		// recur using the original `type`, the tests we haven't yet conducted, 
+		// the reduced array of key/value pairs that haven't yet been claimed
+		// the tallied number of successes, and the total cost of all of the tests
 		return testType(type, remainingTests, reducedArray, successes, totalCost);
 	}
 
-	// todo transition from key/value pair array to object -> for now just use _.toPairs ?
+	// **todo** transition from key/value pair array to object -> for now just use _.toPairs ?
+
+	// predicate to test whether an `x` is equal to `v`
 	function is(v) { return function(x) { return x === v; }}
 
+
+	// quick and dirty pair abstraction with getters
 	function key(pair) { return pair[0]; }
 	function value(pair) { return pair[1]; }
+	function makePair(key, value) { return [key, value]; }
 
-	function makePair(key, value) {
-		return [key, value];
-	}
+	// alias for our make predicate pair
+	var makePredicatePar = makePair;
 
-	function makePredicatePair(keyPredicate, valuePredicate) { return makePair(keyPredicate, valuePredicate); }
-
+	// convert our object to an array of key/value pairs and run the tests on it
 	function evalObject(obj, tests) {
 		var pairs = _.toPairs(obj);
 		
+		// evaluate all the `'BOUND'` tests first
 		var boundResults;
 		try {
 			boundResults = testType('BOUND', tests, pairs);
@@ -712,6 +769,7 @@ function objectParser(obj) {
 			return false;
 		}
 
+		// evaulate all the `'FREE'` tests
 		var freeResults;
 		try {
 			freeResults = testType('FREE', tests, boundResults);
@@ -720,49 +778,67 @@ function objectParser(obj) {
 			return false;
 		}
 
-		return freeResults.length === 0; // nothing left over !
+		// if the tests didn't fail, and we don't have any unclaimed
+		// key/value pairs, then all the tests succeeded!
+		return freeResults.length === 0;
 	}
 
+	// parse out specials from the keys and values of an object
+	// and construct the required tests described in the object schema
 	function parseSchemaObject(obj) {
 		var keys = Object.keys(obj);
-
 		var tests = [];
 
+		// parse specials out from the keys
 		keys.forEach(function(k){
 			var specials = parseSpecial(k);
 
+			// no specials were found in the key, so we interpret as matching the value of the key
 			if (specials.length === 0) {
 				tests.push(makeTest('BOUND', makePredicatePair(is(k), parser(obj[k])), 1, 1));
 			}
 
+			// is the key optional? I.e. `'(name)'`
 			var optional = specials.reduce(function(acc,v){ return acc || v.name === 'OPTIONAL'}, false);
+			// is the key a `*`?
 			var star = specials.reduce(function(acc,v){ return acc || v.name === 'STAR'}, false);
+			// is the key a `**`?
 			var star_star = specials.reduce(function(acc,v){ return acc || v.name === 'STAR_STAR'}, false);
 
 			if (star) {
+				// * matches exactly one key/value pair
 				var cost = 1;
+				// (*) matches 0 or 1, so the `cost` of the test is 0, but the df of the test is still 1
 				if(optional) { cost = 0; }
 				tests.push(makeTest('FREE', makePredicatePair(isAnything, parser(obj[k])), 1, cost));
 			}
 
 			if (star_star) {
+				// ** matches at least 1 key/value pair
 				var cost = 1;
+				// an optional test doesn't cost anything
 				if(optional) {cost = 0; }
+				// since ** consumes all matches, its degrees of freedom is `Infinity`
 				tests.push(makeTest('FREE', makePredicatePair(isAnything, parser(obj[k])), Infinity, cost));
 			}
 
+			// lastly, the case for optional values `'(name)'` with no specials
 			if(optional && !(star||star_star)) {
+				// the value inside of the parens => `name` in our example
 				var testVal = specials[0].result;
+				// the cost is 0, the df is 1, and we use is(testVal) to match on the value inside the parens
 				tests.push(makeTest('BOUND', makePredicatePair(is(testVal), parser(obj[k])), 1, 0));
 			}
 
 		});
 
+		// return the parser built out from the schema
 		return function op(o) {
 			return evalObject(o, tests);
 		};
 	}
 
+	// parse the object and return a parser
 	return parseSchemaObject(obj);
 }
 
@@ -820,12 +896,12 @@ function parser(v) {
 	return p(v);
 }
 
-// // register the components to export
-// exports['parser'] = parser;
-// exports['o'] = o;
-// exports['Failure'] = Failure;
+// register the components to export
+exports['parser'] = parser;
+exports['o'] = o;
+exports['Failure'] = Failure;
 
-// return exports;
+return exports;
 
-// };
+})();
 
