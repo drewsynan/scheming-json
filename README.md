@@ -49,7 +49,7 @@ var articlesValid = articlesParser(someArrayofArticles); // => true
 Alternatively, we could build up smaller schema pieces, and then combine them:
 ```javascript
 var tag = {tagName: isString};
-var article = {title: isString, author: isString, published: isDateString, tags[tag]};
+var article = {title: isString, author: isString, published: isDateString, tags: [tag]};
 var articles = {articles: [article]};
 ```
 All of the type checkers (like `isString` or `isDateString`) are just functions that take some input and return either true or false (a "predicate"). The function could be something from the JavaScript core (`Array.isArray`), something that we define is a one off (`function greaterThanThree(x){return x>3;}`), or a parser that we've generated previously (like the parser functioned returned by `parser(tag)`)
