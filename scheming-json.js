@@ -77,7 +77,9 @@
 //   '**': isString
 // };
 // ```
-// This says 'match an object with a key named `title` that's a string, with a key named `tags` holding an array of tag objects, and with 0 or more keys named anything that are all strings.
+// This says 'match an object with a key named `title` that's a string, with a key named `tags` holding an array of tag objects, 
+// and with 1 or more keys named anything that are all strings.
+// To match 0 or more keys use `(**)` combining `**` and the `(...)` optional operator described below.
 
 // *
 // -
@@ -116,15 +118,33 @@
 
 // Both the empty array and empty object notation are shorthands for `isArray` and `isObject` predicates.
 
-// $...$
+// (...)
 // -----
-// The dollar sign operators allow lookup of sibling key values within the same object.
+// Parens are a way of marking a rule as optional. For example
 
 // ```javascript
-//   {title: isString, author: myCoolLookupFunction('$title$')}
+//   {title: isString, author: isString, (website): isUrl}
 // ```
 
-// Coming soon: how to write functions that can accept `$...$` arguments.
+// If the website field is present in an object, then the predicate must succeed or the parse will fail.
+//
+// () can also be combined with other special operators.
+
+//```javascript
+//	{title: isString, '(author)': isString, '(*)': isString, '(*)': isBool}
+//```
+// will optionally match a field called author that is a string, a field named anything that is a string, and
+// another field named anything that is a bool
+
+//```javascript
+//	{title: isString, author: isString, '(**)': '*'}
+//```
+// will require a title and author fieldds whose types are strings, and ignore all other 0 or more keys. We can also place
+// type constraings on the remaining keys like so
+//```javascript
+//	{title: isString, author: isString, '(**)': isString}
+//```
+// which requires all remaining fields to strings
 
 
 // Composing predicate functions
