@@ -36,7 +36,7 @@ var schema = {articles:
   }]
 };
 ```
-Which says that we have a root object with a key called `articles`, which contains an array of one or more objects each having a key called `title` (who's type is a string), `author` (also a string), `datePublished` (using a custom type called `dateString` that we defined), and `tags`, which contains an array of objects (each object having only one field named `tagName`, whose type is a string).
+Which says that we have a root object with a key called `articles`, which contains an array of one or more objects each having a key called `title` (whose type is a string), `author` (also a string), `datePublished` (using a custom type called `dateString` that we defined), and `tags`, which contains an array of objects (each object having only one field named `tagName`, whose type is a string).
 
 To translate our ruleset into something that we can evaulate json and javascript variables on, we need a parser function. To get a function the parser, use the `parser` function, and apply it to some data to parse.
 ```javascript
