@@ -2,12 +2,25 @@ describe("Logical Funcs", function(){
 	var sj = require('../scheming-json.js');
 	var all = sj['__ALL__'];
 	var jsc = require('jsverify');
+	var _ = require('lodash');
 
 	describe("Identity", function(){
-		//
+		it("should return the values it's given", function(){
+
+		});
 	});
 	describe("Not", function(){
-		// let's use jsverify here
+		var not = all.not;
+		it("should return true for falsy values", function(){
+			var prop = jsc.forall(jsc.falsy, function(f) {
+				return not(f) === true;
+			});
+			expect(prop).toHold();
+		});
+
+		it("should return false for truthy values", function(){
+			// hmm what does a generator for truthy functions look like?
+		});
 	});
 
 	describe("And", function(){
@@ -15,10 +28,14 @@ describe("Logical Funcs", function(){
 		var andWrapped = all.andWrapped;
 
 		it("should follow the normal logical rules of &&", function(){
-			expect(and(true, true)).toBe(true);
-			expect(and(true, false)).toBe(false);
-			expect(and(false, true)).toBe(false);
-			expect(and(false, false)).toBe(false);
+			var p = jsc.forall(jsc.bool, function(f) {
+				return and(true, f) === f;
+			});
+			expect(p).toHold();
+
+			// we should check that all the weird javascript falsy rules hold too....
+			// but why would you be using them and not real bools?
+			
 		});
 
 		it("should still work when using wrapped thunks", function(){
