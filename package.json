@@ -1,0 +1,34 @@
+{
+  "name": "scheming-json",
+  "version": "0.0.1",
+  "description": "A lightweight, functional library for describing and validating JSON and JavaScript data.",
+  "main": "scheming-json.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "lodash": "^4.9.0"
+  },
+  "devDependencies": {
+    "jsverify": "^0.7.1"
+  },
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://drewsynan@github.com/drewsynan/scheming-json.git"
+  },
+  "keywords": [
+    "json",
+    "schema",
+    "validator",
+    "functional"
+  ],
+  "author": "Drew Synan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/drewsynan/scheming-json/issues"
+  },
+  "homepage": "https://github.com/drewsynan/scheming-json#readme"
+}
